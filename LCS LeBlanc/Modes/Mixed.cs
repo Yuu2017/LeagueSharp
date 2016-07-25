@@ -20,13 +20,13 @@ namespace LCS_LeBlanc.Modes
 
             if (Spells.Q.IsReady() && Utilities.Enabled("q.harass"))
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x=> x.IsValidTarget(Spells.Q.Range)))
+                foreach (var enemy in HeroManager.Enemies.Where(x=> x.IsValidTarget(Spells.Q.Range - 50)))
                 {
                     Spells.Q.CastOnUnit(enemy);
                 }
             }
 
-            if (Spells.W.IsReady() && Utilities.Enabled("w.harass"))
+            if (Spells.W.IsReady() && Utilities.Enabled("w.harass") && !Spells.Q.IsReady())
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x=> x.IsValidTarget(Spells.W.Range)))
                 {
