@@ -8,6 +8,8 @@ using LCS_LeBlanc.Modes;
 using LCS_LeBlanc.Modes.Combo;
 using LeagueSharp.Common;
 using LeagueSharp;
+using SharpDX;
+using Utilities = LCS_LeBlanc.Extensions.Utilities;
 
 namespace LCS_LeBlanc
 {
@@ -18,6 +20,7 @@ namespace LCS_LeBlanc
             OnLoad();
         }
 
+        private static Vector3 WBackPosition;
         private static void OnLoad()
         {
             Spells.Initialize();
@@ -25,7 +28,23 @@ namespace LCS_LeBlanc
 
             Game.OnUpdate += OnUpdate;
             AntiGapcloser.OnEnemyGapcloser += OnGapcloser;
+            GameObject.OnCreate += OnCreate;
         }
+
+
+        private static void OnCreate(GameObject sender, EventArgs args)
+        {
+            if (sender.IsValid && sender.Name.Contains("return_indicator") && sender.IsVisible)
+            {
+                WBackPosition = sender.Position;
+            }
+            else
+            {
+                WBackPosition = new Vector3(0,0,0);
+            }
+            
+        }
+
         private static void OnGapcloser(ActiveGapcloser gapcloser)
         {
             if (gapcloser.Sender.IsEnemy && gapcloser.Sender.IsValidTarget(Spells.E.Range) &&
@@ -51,7 +70,6 @@ namespace LCS_LeBlanc
 
         private static void OnUpdate(EventArgs args)
         {
-           
             Utilities.UpdateUltimateVariable();
 
             switch (Menus.Orbwalker.ActiveMode)

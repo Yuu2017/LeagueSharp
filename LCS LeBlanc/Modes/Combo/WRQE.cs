@@ -13,9 +13,9 @@ namespace LCS_LeBlanc.Modes.Combo
     {
         public static void WRQECombo()
         {
-            if (ObjectManager.Player.HasBuff("LeblancSlide") && Utilities.Enabled("w.combo.back"))
+            if (ObjectManager.Player.HasBuff("LeblancSlide") && !Utilities.Enabled("w.combo.back"))
             {
-                Spells.W.Cast();
+                return;
             }
 
             if (Spells.W.IsReady() && Utilities.Enabled("w.combo"))
@@ -66,9 +66,9 @@ namespace LCS_LeBlanc.Modes.Combo
 
         public static void WRQESelected(Obj_AI_Hero enemy)
         {
-            if (ObjectManager.Player.HasBuff("LeblancSlide") && Utilities.Enabled("w.combo.back"))
+            if (ObjectManager.Player.HasBuff("LeblancSlide") && !Utilities.Enabled("w.combo.back"))
             {
-                Spells.W.Cast();
+                return;
             }
 
             if (Spells.W.IsReady() && Utilities.Enabled("w.combo") && enemy.IsValidTarget(Spells.W.Range))
