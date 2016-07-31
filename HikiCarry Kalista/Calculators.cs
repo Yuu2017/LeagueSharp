@@ -11,7 +11,7 @@ namespace HikiCarry_Kalista
 {
     class Calculators
     {
-        private static readonly float[] RRD = { 19, 29, 39, 49, 59 };
+        private static readonly float[] RRD = { 20, 30, 40, 50, 60 };
         private static readonly float[] RRDM = { 0.6f, 0.6f, 0.6f, 0.6f, 0.6f };
         private static readonly float[] RRPS = { 10, 14, 19, 25, 32 };
         private static readonly float[] RRPSM = { 0.2f, 0.225f, 0.25f, 0.275f, 0.3f };
@@ -22,9 +22,9 @@ namespace HikiCarry_Kalista
 
             if (buff > 0 || customStacks > -1)
             {
-                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage) +
+                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod)) +
                        ((customStacks < 0 ? buff : customStacks) - 1) *
-                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage);
+                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod));
 
                 return (float)ObjectManager.Player.CalcDamage(target, Damage.DamageType.Physical, tDamage);
             }
@@ -36,9 +36,9 @@ namespace HikiCarry_Kalista
 
             if (buff > 0 || customStacks > -1)
             {
-                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage) +
+                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod)) +
                        ((customStacks < 0 ? buff : customStacks) - 1) *
-                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage);
+                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod));
 
                 return (float)ObjectManager.Player.CalcDamage(minion, Damage.DamageType.Physical, tDamage);
             }
@@ -51,9 +51,9 @@ namespace HikiCarry_Kalista
 
             if (buff > 0 || customStacks > -1)
             {
-                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage) +
+                var tDamage = (RRD[Program.E.Level - 1] + RRDM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod)) +
                        ((customStacks < 0 ? buff : customStacks) - 1) *
-                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * ObjectManager.Player.TotalAttackDamage);
+                       (RRPS[Program.E.Level - 1] + RRPSM[Program.E.Level - 1] * (ObjectManager.Player.BaseAttackDamage + ObjectManager.Player.FlatPhysicalDamageMod));
 
                 return (float)ObjectManager.Player.CalcDamage(minion, Damage.DamageType.Physical, tDamage);
             }
