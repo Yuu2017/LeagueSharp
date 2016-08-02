@@ -56,7 +56,7 @@ namespace AutoBlueOrb
         public static void BuyBlueOrb(int level)
         {
             if (ObjectManager.Player.Level >= level && ObjectManager.Player.InShop() &&
-                ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3"))
+                ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3")
             {
                 ObjectManager.Player.BuyItem(ItemId.Scrying_Orb_Trinket);
             }
