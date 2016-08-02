@@ -24,6 +24,8 @@ namespace AutoBlueOrb
         {
             _config = new Menu("Random Blue Orb", "Random Blue Orb",true);
             {
+                _config.AddItem(new MenuItem("auto.buy.orb", "(AUTO) Buy Orb ?").SetValue(true));
+                _config.AddItem(new MenuItem("auto.orb.level", "(ORB) Level").SetValue(new Slider(9, 1, 18)));
                 _config.AddItem(new MenuItem("cast.random.blue.orb", "(CAST) Random Blue Orb").SetValue(new KeyBind('T', KeyBindType.Press)));
                 _config.AddItem(new MenuItem("draw.bush.place", "(DRAW) Bush Places").SetValue(new Circle(true, Color.Gold)));
                 _config.AddToMainMenu();
@@ -39,11 +41,25 @@ namespace AutoBlueOrb
 
         private static void OnUpdate(EventArgs args)
         {
-            if (_config.Item("cast.random.blue.orb").GetValue<KeyBind>().Active)
+            if (_config.Item("auto.buy.orb").GetValue<bool>())
+            {
+                BuyBlueOrb(_config.Item("auto.orb.level").GetValue<Slider>().Value);
+            }
+
+            if (_config.Item("cast.random.blue.orb").GetValue<KeyBind>().Active 
+                && ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name == "TrinketOrbLvl3")
             {
                 ExecuteRandomBlueOrb();
             }
             
+        }
+        public static void BuyBlueOrb(int level)
+        {
+            if (ObjectManager.Player.Level >= level && ObjectManager.Player.InShop() &&
+                ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3"))
+            {
+                ObjectManager.Player.BuyItem(ItemId.Scrying_Orb_Trinket);
+            }
         }
 
         private static void ExecuteRandomBlueOrb()
