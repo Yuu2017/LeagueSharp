@@ -5,6 +5,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 
 namespace AutoBlueOrb
 {
@@ -19,7 +20,7 @@ namespace AutoBlueOrb
 
         public static int OrbRange = 3500;
         private static Menu _config;
-
+        public static ItemData.Item Farsight = ItemData.Farsight_Alteration;
         private static void Menus()
         {
             _config = new Menu("Random Blue Orb", "Random Blue Orb",true);
@@ -47,7 +48,8 @@ namespace AutoBlueOrb
             }
 
             if (_config.Item("cast.random.blue.orb").GetValue<KeyBind>().Active 
-                && ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name == "TrinketOrbLvl3")
+                && ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name == "TrinketOrbLvl3"
+                && Farsight.GetItem().IsReady())
             {
                 ExecuteRandomBlueOrb();
             }
@@ -56,9 +58,10 @@ namespace AutoBlueOrb
         public static void BuyBlueOrb(int level)
         {
             if (ObjectManager.Player.Level >= level && ObjectManager.Player.InShop() &&
-                ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3")
+                ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3"
+                && Farsight.GetItem().IsOwned())
             {
-                ObjectManager.Player.BuyItem(ItemId.Scrying_Orb_Trinket);
+                ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
             }
         }
 
