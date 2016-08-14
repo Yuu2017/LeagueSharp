@@ -59,7 +59,7 @@ namespace AutoBlueOrb
         {
             if (ObjectManager.Player.Level >= level && ObjectManager.Player.InShop() &&
                 ObjectManager.Player.GetSpell(SpellSlot.Trinket).SData.Name != "TrinketOrbLvl3"
-                && Farsight.GetItem().IsOwned())
+                && !Farsight.GetItem().IsOwned())
             {
                 ObjectManager.Player.BuyItem(ItemId.Farsight_Orb_Trinket);
             }
