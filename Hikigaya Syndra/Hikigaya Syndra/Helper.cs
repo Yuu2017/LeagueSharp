@@ -142,7 +142,7 @@ namespace Hikigaya_Syndra
             if (Program.R.IsReady() && Program.Config.Item("r.combo").GetValue<bool>())
             {
                 damage += (float)ObjectManager.Player.CalcDamage(enemy, Damage.DamageType.Magical,
-                    Program.R.GetDamage(enemy));
+                    Program.R.GetDamage(enemy)) * ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo;
             }
             if (Program.IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.Spellbook.CanUseSpell(Program.IgniteSlot) == SpellState.Ready &&
                 Program.Config.Item("r.combo").GetValue<bool>())

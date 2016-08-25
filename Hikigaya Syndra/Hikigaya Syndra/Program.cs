@@ -42,13 +42,13 @@ namespace Hikigaya_Syndra
             W.SetSkillshot(0.25f, 140f, 1600f, false, SkillshotType.SkillshotCircle);
 
             E = new Spell(SpellSlot.E, 700, TargetSelector.DamageType.Magical);
-            E.SetSkillshot(0.25f, 100, 2500f, false, SkillshotType.SkillshotLine);
+            E.SetSkillshot(0.25f, (float)(45 * 0.5), 2500f, false, SkillshotType.SkillshotCircle);
 
             R = new Spell(SpellSlot.R, 675, TargetSelector.DamageType.Magical);
             R.SetTargetted(0.5f, 1100f);
 
             Qe = new Spell(SpellSlot.E, 1290);
-            Qe.SetSkillshot(0.6f, 100f, 2500f, false, SkillshotType.SkillshotLine);
+            Qe.SetSkillshot(float.MaxValue, 55f, 2000f, false, SkillshotType.SkillshotCircle);
 
             IgniteSlot = Player.GetSpellSlot("SummonerDot");
 
@@ -74,7 +74,7 @@ namespace Hikigaya_Syndra
                     {
                         qeComboMenu.AddItem(new MenuItem("qe.combo", "Use (QE)").SetValue(true));
                         qeComboMenu.AddItem(new MenuItem("q.e.delay", "QE Delay").SetValue(new Slider(0, 0, 150)));
-                        qeComboMenu.AddItem(new MenuItem("q.e.max.range", "QE Max Range %").SetValue(new Slider(100)));
+                        qeComboMenu.AddItem(new MenuItem("q.e.max.range", "QE Max Range").SetValue(new Slider(1290,1,1290)));
                         qeComboMenu.AddItem(new MenuItem("qe.combo.style", "» (E) Style").SetValue(new StringList(new[] { "If Enemy Stunable" })));
                         qeComboMenu.AddItem(new MenuItem("qe.hit.chance", "(QE) Hit Chance").SetValue(new StringList(HitchanceNameArray, 3)));
                         comboMenu.AddSubMenu(qeComboMenu);
@@ -249,9 +249,8 @@ namespace Hikigaya_Syndra
         private static void OnUpdate(EventArgs args)
         {
             R.Range = R.Level == 3 ? 750f : 675f;
-            E.Width = E.Level == 5 ? 45f : (float)(45 * 0.5);
-            var qeRnew = Config.Item("q.e.max.range").GetValue<Slider>().Value * .01 * 1292;
-            Qe.Range = (float)qeRnew;
+            E.Width = E.Level != 5 ? (float) (45*0.5) : 45f;
+            Qe.Range = Config.Item("q.e.max.range").GetValue<Slider>().Value;
 
             switch (Orbwalker.ActiveMode)
             {
