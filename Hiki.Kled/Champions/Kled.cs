@@ -8,6 +8,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using Utilities = Hiki.Kled.Extensions.Utilities;
+using Color = System.Drawing.Color;
 
 namespace Hiki.Kled.Champions
 {
@@ -25,9 +26,17 @@ namespace Hiki.Kled.Champions
             Menus.Initialize();
 
             Game.OnUpdate += OnUpdate;
+            Drawing.OnEndScene += OnEndScene;
 
         }
 
+        private static void OnEndScene(EventArgs args)
+        {
+            if (Utilities.Enabled("r.range.on.minimap") && Spells.R.Level > 0)
+            {
+                Utilities.DrawCircle(ObjectManager.Player.Position, Spells.R.Range, Color.Gold,1,30,true);
+            }
+        }
         private static void OnUpdate(EventArgs args)
         {
             switch (Menus.Orbwalker.ActiveMode)

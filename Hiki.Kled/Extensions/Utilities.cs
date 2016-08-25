@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace Hiki.Kled.Extensions
 {
@@ -77,6 +79,43 @@ namespace Hiki.Kled.Extensions
 
                 // no intersection or target to close
                 Spells.E.Cast(ObjectManager.Player.ServerPosition.Extend(enemy.ServerPosition, -Spells.E.Range));
+            }
+        }
+
+        public static void DrawCircle(
+           Vector3 center,
+           float radius,
+           Color color,
+           int thickness = 5,
+           int quality = 30,
+           bool onMinimap = false)
+        {
+            if (!onMinimap)
+            {
+                Render.Circle.DrawCircle(center, radius, color, thickness);
+                return;
+            }
+
+            var pointList = new List<Vector3>();
+            for (var i = 0; i < quality; i++)
+            {
+                var angle = i * Math.PI * 2 / quality;
+                pointList.Add(
+                    new Vector3(
+                        center.X + radius * (float)Math.Cos(angle),
+                        center.Y + radius * (float)Math.Sin(angle),
+                        center.Z));
+            }
+
+            for (var i = 0; i < pointList.Count; i++)
+            {
+                var a = pointList[i];
+                var b = pointList[i == pointList.Count - 1 ? 0 : i + 1];
+
+                var aonScreen = Drawing.WorldToMinimap(a);
+                var bonScreen = Drawing.WorldToMinimap(b);
+
+                Drawing.DrawLine(aonScreen.X, aonScreen.Y, bonScreen.X, bonScreen.Y, thickness, color);
             }
         }
     }

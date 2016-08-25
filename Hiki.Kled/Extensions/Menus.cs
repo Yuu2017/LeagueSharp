@@ -80,6 +80,7 @@ namespace Hiki.Kled.Extensions
                 {
                     SPrediction.Prediction.Initialize(Config, ":: sPrediction Settings");
                 }
+                Config.AddItem(new MenuItem("r.range.on.minimap", "Draw [R] Range On Minimap").SetValue(false));
                 Config.AddToMainMenu();
             }
         }
