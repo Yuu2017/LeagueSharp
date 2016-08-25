@@ -2,6 +2,7 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using Font = SharpDX.Direct3D9.Font;
 
 namespace LCS_Lucian
 {
@@ -67,6 +68,15 @@ namespace LCS_Lucian
                 Config.AddSubMenu(killStealMenu);
             }
 
+            var eqMenu = new Menu(":: E+Q KS Settings", ":: E+Q KS Settings").SetFontStyle(FontStyle.Bold,SharpDX.Color.Crimson);
+            {
+                eqMenu.AddItem(new MenuItem("use.eq", "Use E+Q").SetValue(true));
+                eqMenu.AddItem(new MenuItem("eq.safety.check", "Safety Check?").SetValue(true));
+                eqMenu.AddItem(new MenuItem("eq.safety.range", "Safety Range").SetValue(new Slider(1150, 1, 1150)));
+                eqMenu.AddItem(new MenuItem("eq.min.enemy.count.range", "Min Enemy Count").SetValue(new Slider(1, 1, 5)));
+                Config.AddSubMenu(eqMenu);
+            }
+
             var miscMenu = new Menu(":: Miscellaneous", ":: Miscellaneous");
             {
                 var gapcloseSet = new Menu("Anti-Gapclose Settings", "Anti-Gapclose Settings");
@@ -97,7 +107,6 @@ namespace LCS_Lucian
                 }
                 Config.AddSubMenu(drawMenu);
             }
-            //Config.AddItem(new MenuItem("lucian.ult.lock", "(R) Lock Target").SetValue(true));
             Config.AddItem(new MenuItem("lucian.semi.manual.ult", "Semi-Manual (R)!").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
             var drawDamageMenu = new MenuItem("RushDrawEDamage", "Combo Damage").SetValue(true);
             var drawFill = new MenuItem("RushDrawEDamageFill", "Combo Damage Fill").SetValue(new Circle(true, Color.Gold));
