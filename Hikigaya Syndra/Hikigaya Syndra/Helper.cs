@@ -22,7 +22,7 @@ namespace Hikigaya_Syndra
 
         public static void UseW(Obj_AI_Base grabObject, Obj_AI_Base enemy)
         {
-            if (grabObject != null && Program.W.IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).ToggleState == 1)
+            if (grabObject != null && Program.W.IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "SyndraW")
             {
                 var gObjectPos = GetGrabableObjectPos(false);
 
@@ -42,7 +42,7 @@ namespace Hikigaya_Syndra
                         
                 }
             }
-            if (enemy != null && Program.W.IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).ToggleState == 2)
+            if (enemy != null && Program.W.IsReady() && ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "SyndraWCast")
             {
                 var pos = Program.W.GetPrediction(enemy, true);
                 if (pos.Hitchance >= HitChance.High)

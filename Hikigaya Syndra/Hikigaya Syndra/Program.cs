@@ -375,7 +375,7 @@ namespace Hikigaya_Syndra
                 var rangedMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 30,
             MinionTypes.Ranged);
                 var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 30);
-                if (Player.Spellbook.GetSpell(SpellSlot.W).ToggleState == 1)
+                if (Player.Spellbook.GetSpell(SpellSlot.W).Name == "SyndraW")
                 {
                     //WObject
                     var gObjectPos = Helper.GetGrabableObjectPos(false);
@@ -384,7 +384,7 @@ namespace Hikigaya_Syndra
                         W.Cast(gObjectPos);
                     }
                 }
-                else if (Player.Spellbook.GetSpell(SpellSlot.W).ToggleState != 1)
+                else if (Player.Spellbook.GetSpell(SpellSlot.W).Name == "SyndraWCast")
                 {
                     var fl1 = Q.GetCircularFarmLocation(rangedMinionsW, W.Width);
                     var fl2 = Q.GetCircularFarmLocation(allMinionsW, W.Width);
@@ -408,12 +408,12 @@ namespace Hikigaya_Syndra
             if (Q.IsReady() && Config.Item("q.jungle").GetValue<bool>())
             {
                 var mobs = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
-                W.Cast(mobs[0]);
+                Q.Cast(mobs[0]);
             }
             if (W.IsReady() && Config.Item("w.jungle").GetValue<bool>() && Environment.TickCount - Q.LastCastAttemptT > 800)
             {
                 var mobs = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
-                W.Cast(mobs[0]);
+                Helper.UseW(mobs[0],mobs[0]);
             }
             if (E.IsReady() && Config.Item("e.jungle").GetValue<bool>())
             {
@@ -436,7 +436,7 @@ namespace Hikigaya_Syndra
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("q.hit.chance")
                     && x.Health < W.GetDamage(x)))
                 {
-                    Helper.UseW(enemy, enemy);
+                    Helper.UseW(enemy,enemy);
                 }
             }
             if (E.IsReady() && Config.Item("e.ks").GetValue<bool>())
