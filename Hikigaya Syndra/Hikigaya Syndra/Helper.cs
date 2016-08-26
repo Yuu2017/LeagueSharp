@@ -192,7 +192,8 @@ namespace Hikigaya_Syndra
             }
 
             // Morgana's Black Shield (E)
-            if (targetBuffs.Contains("BlackShield") && Config.Item("morgana.e").GetValue<bool>())
+            if (targetBuffs.Contains("BlackShield") && Config.Item("morgana.e").GetValue<bool>()
+                && enemy.Health + enemy.MagicalShield > TotalDamage(enemy))
             {
                 return true;
             }
