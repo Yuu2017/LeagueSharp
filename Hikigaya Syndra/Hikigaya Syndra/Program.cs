@@ -108,14 +108,20 @@ namespace Hikigaya_Syndra
 
                         var rUndyMenu = new Menu(":: R Undy Settings", ":: R Undy Settings");
                         {
-                            rUndyMenu.AddItem(new MenuItem("undy.tryn", "Trynda's Ult").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.kayle", "Kayle's Ult").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.zilean", "Zilean's Ult").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.alistar", "Alistar's Ult").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.zac", "Zac's Passive").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.aatrox", "Aatrox's Passive").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.sivir", "Sivir's Spell Shield").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("undy.morgana", "Morgana's Black Shield").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("kindred.r", "Kindred's Lamb's Respite(R)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("vlad.w", "Vladimir (W)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("try.r", "Tryndamere's Undying Rage (R)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("kayle.r", "Kayle's Intervention (R)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("morgana.e", "Morgana's Black Shield (E)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("sivir.e", "Sivir's Spell Shield (E)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("banshee.passive", "Banshee's Veil (PASSIVE)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("nocturne.w", "Nocturne's Shroud of Darkness (W)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("aatrox.passive", "Aatrox's (PASSIVE)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("zac.passive", "Zac's (PASSIVE)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("alistar.r", "Alistar's (R)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("sion.passive", "Sion's (PASSIVE)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("zilean.r", "Zilean's Chrono's Shift (R)").SetValue(true));
+                            rUndyMenu.AddItem(new MenuItem("yorick.zombie", "Yorick's (ZOMBIE)").SetValue(true));
                             rComboMenu.AddSubMenu(rUndyMenu);
                         }
 
@@ -184,6 +190,7 @@ namespace Hikigaya_Syndra
                     clearMenu.AddItem(new MenuItem("clear.mana", "Min. Mana Percentage").SetValue(new Slider(50, 1, 99)));
                     Config.AddSubMenu(clearMenu);
                 }
+
                 var ksMenu = new Menu(":: Killsteal Settings", ":: Killsteal Settings");
                 {
                     ksMenu.AddItem(new MenuItem("keysinfo1q1", "                  (Q) Settings").SetTooltip("Q Settings"));
@@ -194,6 +201,7 @@ namespace Hikigaya_Syndra
                     ksMenu.AddItem(new MenuItem("e.ks", "Use (E)").SetValue(true));
                     Config.AddSubMenu(ksMenu);
                 }
+
                 var drawMenu = new Menu(":: Drawings", ":: Drawings");
                 {
                     drawMenu.AddItem(new MenuItem("q.draw", "(Q) Range").SetValue(new Circle(false,Color.Pink)));
