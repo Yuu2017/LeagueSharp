@@ -140,7 +140,7 @@ namespace Hikigaya_Syndra
             if (R.IsReady() && Config.Item("r.combo").GetValue<bool>())
             {
                 damage += (float)ObjectManager.Player.CalcDamage(enemy, Damage.DamageType.Magical,
-                    R.GetDamage(enemy)) * ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo;
+                    R.GetDamage(enemy)) * 3;
             }
             if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.Spellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
                 Config.Item("r.combo").GetValue<bool>())
@@ -153,20 +153,7 @@ namespace Hikigaya_Syndra
         public static bool BuffCheck(Obj_AI_Base enemy)
         {
             var targetBuffs = new HashSet<string>(enemy.Buffs.Select(buff => buff.Name),StringComparer.OrdinalIgnoreCase);
-            /*
-             rUndyMenu.AddItem(new MenuItem("kindred.r", "Kindred's Lamb's Respite(R)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("vlad.w", "Vladimir (W)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("try.r", "Tryndamere's Undying Rage (R)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("kayle.r", "Kayle's Intervention (R)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("morgana.e", "Morgana's Black Shield (E)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("sivir.e", "Sivir's Spell Shield (E)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("banshee.passive", "Banshee's Veil (PASSIVE)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("nocturne.w", "Nocturne's Shroud of Darkness (W)").SetValue(true));
 
-                            rUndyMenu.AddItem(new MenuItem("aatrox.r", "Aatrox's (R)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("zac.passive", "Zac's (PASSIVE)").SetValue(true));
-                            rUndyMenu.AddItem(new MenuItem("alistar.r", "Alistar's (R)").SetValue(true));
-             */
             // Kindred's Lamb's Respite(R)
             if (targetBuffs.Contains("KindredRNoDeathBuff") && enemy.HealthPercent <= 10 && Config.Item("kindred.r").GetValue<bool>())
             {

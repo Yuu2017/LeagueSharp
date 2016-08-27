@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
+using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace Hikigaya_Syndra
@@ -21,6 +22,10 @@ namespace Hikigaya_Syndra
         {
             return HitchanceArray[Config.Item(menuName).GetValue<StringList>().SelectedIndex];
         }
+        private static int _wallCastT;
+        private static Vector2 _yasuoWallCastedPos;
+        private static GameObject _yasuoWall;
+
         // ReSharper disable once UnusedParameter.Local
         static void Main(string[] args)
         {
@@ -129,6 +134,7 @@ namespace Hikigaya_Syndra
                         rComboMenu.AddItem(new MenuItem("r.combo.style", "» (R) Style").SetValue(new StringList(new[] { "Only Enemy If Killable" })));
                         comboMenu.AddSubMenu(rComboMenu);
                     }
+                    comboMenu.AddItem(new MenuItem("yasuo.wall", "Don't try to use skillshots on Yasuo's Wall").SetValue(true));
                     Config.AddSubMenu(comboMenu);
                 }
                 var harassMenu = new Menu(":: Harass Settings", ":: Harass Settings");
@@ -211,6 +217,7 @@ namespace Hikigaya_Syndra
                     drawMenu.AddItem(new MenuItem("r.draw", "(R) Range").SetValue(new Circle(false, Color.Lime)));
                     Config.AddSubMenu(drawMenu);
                 }
+
                 var drawDamageMenu = new MenuItem("combo.damage.damageindicator", "Combo Damage").SetValue(true);
                 var drawFill = new MenuItem("combo.damage.damageindicator.fill", "Combo Damage Fill").SetValue(new Circle(true, Color.Gold));
 
@@ -234,13 +241,119 @@ namespace Hikigaya_Syndra
                     DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
                     DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
                 };
+
+                Config.AddItem(new MenuItem("qe.antigapcloser", "Anti-Gapcloser (QE)").SetValue(true));
+                Config.AddItem(new MenuItem("qe.interrupt", "Interrupt (QE)").SetValue(true));
                 Config.AddItem(new MenuItem("credits.x1", "                Developed by Hikigaya").SetFontStyle(FontStyle.Bold, SharpDX.Color.DodgerBlue));
                 Config.AddToMainMenu();
             }
+
+            GameObject.OnCreate += OnCreate;
+            GameObject.OnDelete += OnDelete;
+
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
+            Interrupter2.OnInterruptableTarget += OnInterrupt;
+            AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
         }
+
+        private static void OnCreate(GameObject sender, EventArgs args)
+        {
+            if (Player.Distance(sender.Position) > 1500 ||
+                !ObjectManager.Get<Obj_AI_Hero>()
+                    .Any(h => h.ChampionName == "Yasuo" && h.IsEnemy && h.IsVisible && !h.IsDead))
+            {
+                return;
+            }
+
+            if (sender.IsValid && System.Text.RegularExpressions.
+                Regex.IsMatch(sender.Name, "_w_windwall.\\.troy",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
+                _yasuoWall = sender;
+            }
+        }
+
+        private static void OnDelete(GameObject sender, EventArgs args)
+        {
+            if (Player.Distance(sender.Position) > 1500 ||
+                !ObjectManager.Get<Obj_AI_Hero>()
+                    .Any(h => h.ChampionName == "Yasuo" && h.IsEnemy && h.IsVisible && !h.IsDead))
+            {
+                return;
+            }
+
+            if (sender.IsValid && System.Text.RegularExpressions.
+                Regex.IsMatch(sender.Name, "_w_windwall.\\.troy",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
+                _yasuoWall = null;
+            }
+        }
+
+        private static bool DetectCollision(GameObject target)
+        {
+            if (_yasuoWall == null || !Config.Item("yasuo.wall").GetValue<bool>() ||
+                !ObjectManager.Get<Obj_AI_Hero>()
+                    .Any(h => h.ChampionName == "Yasuo" && h.IsEnemy && h.IsVisible && !h.IsDead))
+            {
+                return true;
+            }
+                
+
+            var level = _yasuoWall.Name.Substring(_yasuoWall.Name.Length - 6, 1);
+            var wallWidth = (300 + 50 * Convert.ToInt32(level));
+            var wallDirection = (_yasuoWall.Position.To2D() - _yasuoWallCastedPos).Normalized().Perpendicular();
+            var wallStart = _yasuoWall.Position.To2D() + ((int)(wallWidth / 2)) * wallDirection;
+            var wallEnd = wallStart - wallWidth * wallDirection;
+
+            var intersection = wallStart.Intersection(wallEnd, Player.Position.To2D(), target.Position.To2D());
+
+            return !intersection.Point.IsValid() || !(Environment.TickCount + Game.Ping + R.Delay - _wallCastT < 4000);
+
+        }
+
+        private static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!Config.Item("AntiGap").GetValue<bool>()) return;
+
+            if (!E.IsReady() || !(Player.Distance(gapcloser.Sender, true) <= Math.Pow(Qe.Range, 2)) ||
+                !gapcloser.Sender.IsValidTarget(Qe.Range))
+                return;
+            if (Q.IsReady() && Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + Player.Spellbook.GetSpell(SpellSlot.E).ManaCost <= Player.Mana)
+            {
+                Helper.UseQe(gapcloser.Sender);
+            }
+            else if (Player.Distance(gapcloser.Sender, true) <= Math.Pow(E.Range, 2))
+            {
+                E.Cast(gapcloser.End);
+            }
+        }
+
+        private static void OnInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
+        {
+            if (!Config.Item("qe.interrupt").GetValue<bool>())
+            {
+                return;
+            }
+            if (E.IsReady() && sender.IsEnemy && ObjectManager.Player.Distance(sender,true) < Math.Pow(E.Range,2))
+            {
+                if (Q.IsReady())
+                {
+                    Helper.UseQe(sender);
+                }
+                else
+                {
+                    E.Cast(sender);
+                }
+            }
+            else if (Q.IsReady() && E.IsReady() && sender.IsEnemy && ObjectManager.Player.Distance(sender,true) < Math.Pow(Qe.Range,2))
+            {
+                Helper.UseQe(sender);
+            }
+        }
+
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsMe)
@@ -253,6 +366,10 @@ namespace Hikigaya_Syndra
                     E.LastCastAttemptT = Environment.TickCount;
             }
 
+            if (!sender.IsValid || sender.Team == ObjectManager.Player.Team || args.SData.Name != "YasuoWMovingWall")
+                return;
+            _wallCastT = Environment.TickCount;
+            _yasuoWallCastedPos = sender.ServerPosition.To2D();
         }
         private static void OnUpdate(EventArgs args)
         {
@@ -290,14 +407,16 @@ namespace Hikigaya_Syndra
             }
             if (W.IsReady() && Config.Item("w.combo").GetValue<bool>())
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("w.hit.chance")))
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("w.hit.chance")
+                && DetectCollision(x)))
                 {
                     Helper.UseW(enemy,enemy);
                 }
             }
             if (Q.IsReady() && E.IsReady() && Config.Item("qe.combo").GetValue<bool>())
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Qe.Range) && Qe.GetPrediction(x).Hitchance >= HikiChance("qe.hit.chance")))
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Qe.Range) && Qe.GetPrediction(x).Hitchance >= HikiChance("qe.hit.chance")
+                && DetectCollision(x)))
                 {
                     Helper.UseQe(enemy);
                 }
@@ -306,7 +425,7 @@ namespace Hikigaya_Syndra
             if (R.IsReady() && Config.Item("r.combo").GetValue<bool>())
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && !Helper.BuffCheck(x) &&
-                    Config.Item("r.combo."+x.ChampionName).GetValue<bool>()))
+                    Config.Item("r.combo."+x.ChampionName).GetValue<bool>() && DetectCollision(x)))
                 {
                     if (enemy.Health < R.GetDamage(enemy))
                     {
@@ -319,7 +438,7 @@ namespace Hikigaya_Syndra
             if (IgniteSlot != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(IgniteSlot) == SpellState.Ready && Config.Item("use.ignite").GetValue<bool>())
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Player.Spellbook.GetSpell(IgniteSlot).SData.CastRange)
-                    && x.Health < Q.GetDamage(x) + W.GetDamage(x)))
+                    && x.Health < Q.GetDamage(x) + W.GetDamage(x) && DetectCollision(x)))
                 {
                     Player.Spellbook.CastSpell(IgniteSlot, enemy);
                 }
@@ -349,14 +468,16 @@ namespace Hikigaya_Syndra
             }
             if (W.IsReady() && Config.Item("w.harass").GetValue<bool>())
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("w.hit.chance")))
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("w.hit.chance")
+                && DetectCollision(x)))
                 {
                     Helper.UseW(enemy,enemy);
                 }
             }
             if (Q.IsReady() && E.IsReady() && Config.Item("qe.harass").GetValue<bool>())
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Qe.Range) && Qe.GetPrediction(x).Hitchance >= HikiChance("qe.hit.chance")))
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Qe.Range) && Qe.GetPrediction(x).Hitchance >= HikiChance("qe.hit.chance")
+                && DetectCollision(x)))
                 {
                     Helper.UseQe(enemy);
                 }
@@ -442,7 +563,7 @@ namespace Hikigaya_Syndra
             if (W.IsReady() && Config.Item("w.ks").GetValue<bool>())
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range + W.Width) && W.GetPrediction(x).Hitchance >= HikiChance("q.hit.chance")
-                    && x.Health < W.GetDamage(x)))
+                    && x.Health < W.GetDamage(x) && DetectCollision(x)))
                 {
                     Helper.UseW(enemy,enemy);
                 }
@@ -450,7 +571,7 @@ namespace Hikigaya_Syndra
             if (E.IsReady() && Config.Item("e.ks").GetValue<bool>())
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(E.Range) && E.GetPrediction(x).Hitchance >= HikiChance("e.hit.chance")
-                    && x.Health < E.GetDamage(x)))
+                    && x.Health < E.GetDamage(x) && DetectCollision(x)))
                 {
                     E.Cast(enemy);
                 }
@@ -477,13 +598,6 @@ namespace Hikigaya_Syndra
         }
         private static void OnDraw(EventArgs args)
         {
-            /*
-             drawMenu.AddItem(new MenuItem("q.draw", "(Q) Range").SetValue(new Circle(true,Color.Pink)));
-                    drawMenu.AddItem(new MenuItem("qe.draw", "(QE) Range").SetValue(new Circle(true, Color.CornflowerBlue)));
-                    drawMenu.AddItem(new MenuItem("w.draw", "(W) Range").SetValue(new Circle(true, Color.Gold)));
-                    drawMenu.AddItem(new MenuItem("r.draw", "(R) Range").SetValue(new Circle(true, Color.Lime)));
-             */
-
             if (Config.Item("q.draw").GetValue<Circle>().Active)
             {
                 Render.Circle.DrawCircle(ObjectManager.Player.Position, Q.Range, Color.CornflowerBlue);

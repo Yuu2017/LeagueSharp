@@ -22,7 +22,7 @@ namespace Hikigaya_Syndra
         public static bool Enabled = true;
         private static DamageToUnitDelegate _damageToUnit;
 
-        private static readonly Render.Text Text = new Render.Text(0, 0, "", 14, SharpDX.Color.Red, "monospace");
+        private static readonly Render.Text Text = new Render.Text(0, 0, "KILLABLE", 20, SharpDX.Color.Red, "monospace");
 
         public static DamageToUnitDelegate DamageToUnit
         {
