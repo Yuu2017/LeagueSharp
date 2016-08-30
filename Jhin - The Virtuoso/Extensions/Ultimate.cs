@@ -17,9 +17,8 @@ namespace Jhin___The_Virtuoso.Extensions
             {
                 if (Menus.Config.Item("auto.shoot.bullets").GetValue<bool>())
                 {
-                    var blocked = HeroManager.Enemies.Where(x => !Menus.Config.Item("r.combo." + x.ChampionName).GetValue<bool>());
-                    var tstarget = TargetSelector.GetTarget(Spells.R.Range, TargetSelector.DamageType.Physical, false, blocked);
-                    if (tstarget != null)
+                    foreach (var tstarget in HeroManager.Enemies.Where(x => Menus.Config.Item("r.combo." + x.ChampionName).GetValue<bool>()
+                    && x.IsValidTarget(Spells.R.Range) && !FogOfWar.InFog(x.Position)))
                     {
                         var pred = Spells.R.GetPrediction(tstarget);
                         if (pred.Hitchance >= Menus.Config.HikiChance("r.hit.chance"))
@@ -28,15 +27,15 @@ namespace Jhin___The_Virtuoso.Extensions
                             return;
                         }
                     }
+                   
                 }
             }
             else
             {
                 if (Spells.R.IsReady() && Menus.Config.Item("semi.manual.ult").GetValue<KeyBind>().Active)
                 {
-                    var blocked = HeroManager.Enemies.Where(x => !Menus.Config.Item("r.combo." + x.ChampionName).GetValue<bool>());
-                    var tstarget = TargetSelector.GetTarget(Spells.R.Range, TargetSelector.DamageType.Physical, false, blocked);
-                    if (tstarget != null)
+                    foreach (var tstarget in HeroManager.Enemies.Where(x => Menus.Config.Item("r.combo." + x.ChampionName).GetValue<bool>()
+                    && x.IsValidTarget(Spells.R.Range) && !FogOfWar.InFog(x.Position)))
                     {
                         var pred = Spells.R.GetPrediction(tstarget);
                         if (pred.Hitchance >= Menus.Config.HikiChance("r.hit.chance"))

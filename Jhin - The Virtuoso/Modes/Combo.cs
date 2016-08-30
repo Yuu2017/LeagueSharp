@@ -35,7 +35,7 @@ namespace Jhin___The_Virtuoso.Modes
         /// </summary>
         public static void ExecuteQ()
         {
-            foreach (var enemy in HeroManager.Enemies.Where(x=> x.IsValidTarget(Spells.Q.Range) && !x.IsReloading()))
+            foreach (var enemy in HeroManager.Enemies.Where(x=> x.IsValidTarget(Spells.Q.Range)))
             {
                 Spells.Q.CastOnUnit(enemy);
             }

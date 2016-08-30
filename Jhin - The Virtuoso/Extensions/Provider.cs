@@ -42,7 +42,7 @@ namespace Jhin___The_Virtuoso.Extensions
                    unit.HasBuffOfType(BuffType.Charm) || unit.HasBuffOfType(BuffType.Fear) ||
                    unit.HasBuffOfType(BuffType.Knockback) ||
                    unit.HasBuffOfType(BuffType.Taunt) || unit.HasBuffOfType(BuffType.Suppression) ||
-                   unit.IsStunned || unit.IsChannelingImportantSpell();
+                   unit.IsStunned || unit.IsChannelingImportantSpell() || unit.IsStunnable();
         }
 
         /// <summary>

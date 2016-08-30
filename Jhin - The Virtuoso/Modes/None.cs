@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Jhin___The_Virtuoso.Extensions;
@@ -17,7 +18,11 @@ namespace Jhin___The_Virtuoso.Modes
             {
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Spells.E.Range) && x.IsEnemyImmobile()))
                 {
-                    Spells.E.Cast(enemy);
+                    var pred = Spells.E.GetPrediction(enemy);
+                    if (pred.Hitchance >= Menus.Config.HikiChance("e.hit.chance"))
+                    {
+                        Spells.E.Cast(pred.CastPosition);
+                    }
                 }
             }
         }
@@ -44,16 +49,6 @@ namespace Jhin___The_Virtuoso.Modes
             }
         }
 
-        public static void TeleportE()
-        {
-            if (Spells.E.IsReady() && Menus.Config.Item("e.combo").GetValue<bool>() && Menus.Config.Item("e.combo.teleport").GetValue<bool>())
-            {
-                foreach (var obj in ObjectManager.Get<Obj_AI_Base>().Where(x => x.Team != ObjectManager.Player.Team && x.Distance(ObjectManager.Player) < Spells.E.Range
-                    && x.HasBuff("teleport_target") && !x.IsDead && !x.IsZombie))
-                {
-                    Spells.E.Cast(obj);
-                }
-            }
-        }
+       
     }
 }

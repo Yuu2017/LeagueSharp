@@ -44,7 +44,7 @@ namespace Jhin___The_Virtuoso.Extensions
                             new MenuItem("w.combo.min.distance", "Min. Distance").SetValue(new Slider(400, 1, 2500)));
                         wComboMenu.AddItem(
                             new MenuItem("w.combo.max.distance", "Max. Distance").SetValue(new Slider(1000, 1, 2500)));
-                        wComboMenu.AddItem(new MenuItem("w.passive.combo", "Use (W) If Enemy Is Marked").SetValue(false));
+                        wComboMenu.AddItem(new MenuItem("w.passive.combo", "Use (W) If Enemy Is Marked").SetValue(true));
                         wComboMenu.AddItem(
                             new MenuItem("w.hit.chance", "(W) Hit Chance").SetValue(
                                 new StringList(Provider.HitchanceNameArray, 2)));
@@ -54,7 +54,6 @@ namespace Jhin___The_Virtuoso.Extensions
                     var eComboMenu = new Menu(":: E", ":: E");
                     {
                         eComboMenu.AddItem(new MenuItem("e.combo", "Use (E)").SetValue(true));
-                        eComboMenu.AddItem(new MenuItem("e.combo.teleport", "Auto (E) Teleport").SetValue(true));
                         eComboMenu.AddItem(
                             new MenuItem("e.hit.chance", "(E) Hit Chance").SetValue(
                                 new StringList(Provider.HitchanceNameArray, 2)));

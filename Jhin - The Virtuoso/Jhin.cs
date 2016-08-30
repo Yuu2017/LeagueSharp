@@ -46,15 +46,13 @@ namespace Jhin___The_Virtuoso
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Mixed.ExecuteHarass();
                     break;
-                case Orbwalking.OrbwalkingMode.None:
-                    None.ImmobileExecute();
-                    None.KillSteal();
-                    None.TeleportE();
-                    Ultimate.ComboUltimate();
-                    break;
             }
             #endregion
-
+            #region General Functions
+            None.ImmobileExecute();
+            None.KillSteal();
+            Ultimate.ComboUltimate();
+            #endregion
             #region Check Ultimate
             if (ObjectManager.Player.IsActive(Spells.R))
             {
