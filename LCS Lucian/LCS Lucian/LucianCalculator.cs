@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace LCS_Lucian
 {
     class LucianCalculator
     {
-        private static readonly double[] UltimatePerDamageDouble = { 20, 35, 50};
-
         public static float LucianTotalDamage(Obj_AI_Hero enemy)
         {
             if (LucianSpells.Q.IsReady() && Helper.LEnabled("lucian.q.combo"))

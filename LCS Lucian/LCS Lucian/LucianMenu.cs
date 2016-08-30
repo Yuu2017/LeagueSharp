@@ -2,7 +2,6 @@
 using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
-using Font = SharpDX.Direct3D9.Font;
 
 namespace LCS_Lucian
 {
@@ -21,6 +20,7 @@ namespace LCS_Lucian
                 comboMenu.AddItem(new MenuItem("lucian.disable.w.prediction", "Disable W Prediction").SetValue(true)).SetTooltip("10/10 for speed combo!", SharpDX.Color.GreenYellow);
                 comboMenu.AddItem(new MenuItem("lucian.r.combo", "Use R").SetValue(true)).SetTooltip("Uses R in Combo (Only Casting If Enemy Killable)", SharpDX.Color.GreenYellow);
                 comboMenu.AddItem(new MenuItem("lucian.combo.start.e", "Start Combo With E").SetValue(true)).SetTooltip("Starting Combo With E", SharpDX.Color.GreenYellow);
+                comboMenu.AddItem(new MenuItem("lucian.e.range", "(E) Range").SetValue(new Slider(475,1,475)));
                 Config.AddSubMenu(comboMenu);
             }
 

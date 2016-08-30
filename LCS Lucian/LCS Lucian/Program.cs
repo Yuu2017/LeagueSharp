@@ -8,8 +8,9 @@ using Spells = LCS_Lucian.LucianSpells;
 
 namespace LCS_Lucian
 {
-    class Program
+    internal class Program
     {
+        // ReSharper disable once UnusedParameter.Local
         static void Main(string[] args)
         {
             if (Game.Mode == GameMode.Running)
@@ -19,6 +20,7 @@ namespace LCS_Lucian
             CustomEvents.Game.OnGameLoad += OnLoad;
         }
 
+        public static int ERange => Helper.LSlider("lucian.e.range");
         private static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.ChampionName != "Lucian")
@@ -42,17 +44,15 @@ namespace LCS_Lucian
             Obj_AI_Base.OnDoCast += LucianOnDoCast;
             Drawing.OnDraw += LucianOnDraw;
         }
-        public static bool UltActive
-        {
-            get { return ObjectManager.Player.HasBuff("LucianR"); }
-        }
+        public static bool UltActive => ObjectManager.Player.HasBuff("LucianR");
+
         private static void ECast(Obj_AI_Hero enemy)
         {
             var range = Orbwalking.GetRealAutoAttackRange(enemy);
             var path = Geometry.CircleCircleIntersection(ObjectManager.Player.ServerPosition.To2D(),
-                Prediction.GetPrediction(enemy, 0.25f).UnitPosition.To2D(), LucianSpells.E.Range, range);
+                Prediction.GetPrediction(enemy, 0.25f).UnitPosition.To2D(), ERange, range);
 
-            if (path.Count() > 0)
+            if (path.Length > 0)
             {
                 var epos = path.MinOrDefault(x => x.Distance(Game.CursorPos));
                 if (epos.To3D().UnderTurret(true) || epos.To3D().IsWall())
@@ -60,22 +60,22 @@ namespace LCS_Lucian
                     return;
                 }
 
-                if (epos.To3D().CountEnemiesInRange(LucianSpells.E.Range - 100) > 0)
+                if (epos.To3D().CountEnemiesInRange(ERange - 100) > 0)
                 {
                     return;
                 }
-                LucianSpells.E.Cast(epos);
+                Spells.E.Cast(epos);
             }
-            if (path.Count() == 0)
+            if (path.Length == 0)
             {
-                var epos = ObjectManager.Player.ServerPosition.Extend(enemy.ServerPosition, -LucianSpells.E.Range);
+                var epos = ObjectManager.Player.ServerPosition.Extend(enemy.ServerPosition, -ERange);
                 if (epos.UnderTurret(true) || epos.IsWall())
                 {
                     return;
                 }
 
                 // no intersection or target to close
-                LucianSpells.E.Cast(ObjectManager.Player.ServerPosition.Extend(enemy.ServerPosition, -LucianSpells.E.Range));
+                Spells.E.Cast(ObjectManager.Player.ServerPosition.Extend(enemy.ServerPosition, -ERange));
             }
         }
         private static void LucianOnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -84,32 +84,32 @@ namespace LCS_Lucian
             {
                 if (Helper.LEnabled("lucian.combo.start.e"))
                 {
-                    if (!LucianSpells.E.IsReady() && LucianSpells.Q.IsReady() && Helper.LEnabled("lucian.q.combo") &&
-                    ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.Q.Range &&
+                    if (!Spells.E.IsReady() && Spells.Q.IsReady() && Helper.LEnabled("lucian.q.combo") &&
+                    ObjectManager.Player.Distance(args.Target.Position) < Spells.Q.Range &&
                     LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                     {
-                        LucianSpells.Q.CastOnUnit(((Obj_AI_Hero)args.Target));
+                        Spells.Q.CastOnUnit(((Obj_AI_Hero)args.Target));
                     }
                     
-                    if (!LucianSpells.E.IsReady() && LucianSpells.W.IsReady() && Helper.LEnabled("lucian.w.combo") &&
-                        ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.W.Range &&
+                    if (!Spells.E.IsReady() && Spells.W.IsReady() && Helper.LEnabled("lucian.w.combo") &&
+                        ObjectManager.Player.Distance(args.Target.Position) < Spells.W.Range &&
                         LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                     {
                         if (Helper.LEnabled("lucian.disable.w.prediction"))
                         {
-                            LucianSpells.W.Cast(((Obj_AI_Hero)args.Target).Position);
+                            Spells.W.Cast(((Obj_AI_Hero)args.Target).Position);
                         }
                         else
                         {
-                            if (LucianSpells.W.GetPrediction(((Obj_AI_Hero)args.Target)).Hitchance >= HitChance.Medium)
+                            if (Spells.W.GetPrediction(((Obj_AI_Hero)args.Target)).Hitchance >= HitChance.Medium)
                             {
-                                LucianSpells.W.Cast(((Obj_AI_Hero)args.Target).Position);
+                                Spells.W.Cast(((Obj_AI_Hero)args.Target).Position);
                             }
                         }
                        
                     }
-                    if (LucianSpells.E.IsReady() && Helper.LEnabled("lucian.e.combo") &&
-                        ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.Q2.Range &&
+                    if (Spells.E.IsReady() && Helper.LEnabled("lucian.e.combo") &&
+                        ObjectManager.Player.Distance(args.Target.Position) < Spells.Q2.Range &&
                         LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                     {
                         switch (LucianMenu.Config.Item("lucian.e.mode").GetValue<StringList>().SelectedIndex)
@@ -118,7 +118,7 @@ namespace LCS_Lucian
                                 ECast(((Obj_AI_Hero)args.Target));
                                 break;
                             case 1:
-                                LucianSpells.E.Cast(Game.CursorPos);
+                                Spells.E.Cast(Game.CursorPos);
                                 break;
                         }
                         
@@ -126,21 +126,21 @@ namespace LCS_Lucian
                 }
                 else
                 {
-                    if (LucianSpells.Q.IsReady() && Helper.LEnabled("lucian.q.combo") &&
-                    ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.Q.Range &&
+                    if (Spells.Q.IsReady() && Helper.LEnabled("lucian.q.combo") &&
+                    ObjectManager.Player.Distance(args.Target.Position) < Spells.Q.Range &&
                     LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                     {
-                        LucianSpells.Q.CastOnUnit(((Obj_AI_Hero)args.Target));
+                        Spells.Q.CastOnUnit(((Obj_AI_Hero)args.Target));
                     }
-                    if (LucianSpells.W.IsReady() && Helper.LEnabled("lucian.w.combo") &&
-                        ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.W.Range &&
+                    if (Spells.W.IsReady() && Helper.LEnabled("lucian.w.combo") &&
+                        ObjectManager.Player.Distance(args.Target.Position) < Spells.W.Range &&
                         LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff")
-                        && LucianSpells.W.GetPrediction(((Obj_AI_Hero)args.Target)).Hitchance >= HitChance.Medium)
+                        && Spells.W.GetPrediction(((Obj_AI_Hero)args.Target)).Hitchance >= HitChance.Medium)
                     {
-                        LucianSpells.W.Cast(((Obj_AI_Hero)args.Target).Position);
+                        Spells.W.Cast(((Obj_AI_Hero)args.Target).Position);
                     }
-                    if (LucianSpells.E.IsReady() && Helper.LEnabled("lucian.e.combo") &&
-                        ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.Q2.Range &&
+                    if (Spells.E.IsReady() && Helper.LEnabled("lucian.e.combo") &&
+                        ObjectManager.Player.Distance(args.Target.Position) < Spells.Q2.Range &&
                         LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                     {
                         switch (LucianMenu.Config.Item("lucian.e.mode").GetValue<StringList>().SelectedIndex)
@@ -149,7 +149,7 @@ namespace LCS_Lucian
                                 ECast(((Obj_AI_Hero)args.Target));
                                 break;
                             case 1:
-                                LucianSpells.E.Cast(Game.CursorPos);
+                                Spells.E.Cast(Game.CursorPos);
                                 break;
                         }
                     }
@@ -159,23 +159,23 @@ namespace LCS_Lucian
             else if (sender.IsMe && Orbwalking.IsAutoAttack(args.SData.Name) && args.Target is Obj_AI_Minion && args.Target.IsValid && ((Obj_AI_Minion)args.Target).Team == GameObjectTeam.Neutral
                 && ObjectManager.Player.ManaPercent > Helper.LSlider("lucian.clear.mana"))
             {
-                if (LucianSpells.Q.IsReady() && Helper.LEnabled("lucian.q.jungle") &&
-                    ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.Q.Range &&
+                if (Spells.Q.IsReady() && Helper.LEnabled("lucian.q.jungle") &&
+                    ObjectManager.Player.Distance(args.Target.Position) < Spells.Q.Range &&
                     LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                 {
-                    LucianSpells.Q.CastOnUnit(((Obj_AI_Minion)args.Target));
+                    Spells.Q.CastOnUnit(((Obj_AI_Minion)args.Target));
                 }
-                if (LucianSpells.W.IsReady() && Helper.LEnabled("lucian.w.jungle") &&
-                    ObjectManager.Player.Distance(args.Target.Position) < LucianSpells.W.Range &&
+                if (Spells.W.IsReady() && Helper.LEnabled("lucian.w.jungle") &&
+                    ObjectManager.Player.Distance(args.Target.Position) < Spells.W.Range &&
                     LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                 {
-                    LucianSpells.W.Cast(((Obj_AI_Minion)args.Target).Position);
+                    Spells.W.Cast(((Obj_AI_Minion)args.Target).Position);
                 }
-                if (LucianSpells.E.IsReady() && Helper.LEnabled("lucian.e.jungle") &&
+                if (Spells.E.IsReady() && Helper.LEnabled("lucian.e.jungle") &&
                    ((Obj_AI_Minion)args.Target).IsValidTarget(1000) &&
                     LucianMenu.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
                 {
-                    LucianSpells.E.Cast(Game.CursorPos);
+                    Spells.E.Cast(Game.CursorPos);
                 }
 
             }
@@ -221,7 +221,7 @@ namespace LCS_Lucian
 
                         if (enemy.Health < combodamage)
                         {
-                            Spells.E.Cast(ObjectManager.Player.Position.Extend(enemy.Position, Spells.E.Range));
+                            Spells.E.Cast(ObjectManager.Player.Position.Extend(enemy.Position, ERange));
                         }
                     }
                     
@@ -243,12 +243,12 @@ namespace LCS_Lucian
                     }
                 }
             }
-            if (!UltActive && Helper.LEnabled("lucian.q.ks") && LucianSpells.Q.IsReady())
+            if (!UltActive && Helper.LEnabled("lucian.q.ks") && Spells.Q.IsReady())
             {
                 ExtendedQKillSteal();
             }
             
-            if (!UltActive  && Helper.LEnabled("lucian.w.ks") && LucianSpells.W.IsReady())
+            if (!UltActive  && Helper.LEnabled("lucian.w.ks") && Spells.W.IsReady())
             {
                 KillstealW();
             }
@@ -258,10 +258,10 @@ namespace LCS_Lucian
         private static void SemiManual()
         {
             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(LucianSpells.R.Range) &&
-                LucianSpells.R.GetPrediction(x).CollisionObjects.Count < 2))
+            foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Spells.R.Range) &&
+                Spells.R.GetPrediction(x).CollisionObjects.Count < 2))
             {
-                LucianSpells.R.Cast(enemy);
+                Spells.R.Cast(enemy);
             }
 
         }
@@ -271,15 +271,15 @@ namespace LCS_Lucian
             {
                 return;
             }
-            if (LucianSpells.Q.IsReady() || LucianSpells.Q2.IsReady() && Helper.LEnabled("lucian.q.harass") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
+            if (Spells.Q.IsReady() || Spells.Q2.IsReady() && Helper.LEnabled("lucian.q.harass") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
             {
                 HarassQCast();
             }
-            if (LucianSpells.W.IsReady() && Helper.LEnabled("lucian.w.harass") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
+            if (Spells.W.IsReady() && Helper.LEnabled("lucian.w.harass") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
             {
-                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(LucianSpells.W.Range) && LucianSpells.W.GetPrediction(x).Hitchance >= HitChance.Medium))
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Spells.W.Range) && Spells.W.GetPrediction(x).Hitchance >= HitChance.Medium))
                 {
-                    LucianSpells.W.Cast(enemy);
+                    Spells.W.Cast(enemy);
                 }
             }
         }
@@ -288,55 +288,55 @@ namespace LCS_Lucian
             switch (LucianMenu.Config.Item("lucian.q.type").GetValue<StringList>().SelectedIndex)
             {
                 case 0:
-                    var minions = ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(LucianSpells.Q.Range));
-                    var target = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(LucianSpells.Q2.Range)).FirstOrDefault(x => LucianMenu.Config.Item("lucian.white" + x.ChampionName).GetValue<bool>());
-                    if (target.Distance(ObjectManager.Player.Position) > LucianSpells.Q.Range && target.CountEnemiesInRange(LucianSpells.Q2.Range) > 0)
+                    var minions = ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(Spells.Q.Range));
+                    var target = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(Spells.Q2.Range)).FirstOrDefault(x => LucianMenu.Config.Item("lucian.white" + x.ChampionName).GetValue<bool>());
+                    if (target.Distance(ObjectManager.Player.Position) > Spells.Q.Range && target.CountEnemiesInRange(Spells.Q2.Range) > 0)
                     {
                         foreach (var minion in minions)
                         {
-                            if (LucianSpells.Q2.WillHit(target, ObjectManager.Player.ServerPosition.Extend(minion.ServerPosition, LucianSpells.Q2.Range), 0, HitChance.VeryHigh))
+                            if (Spells.Q2.WillHit(target, ObjectManager.Player.ServerPosition.Extend(minion.ServerPosition, Spells.Q2.Range), 0, HitChance.VeryHigh))
                             {
-                                LucianSpells.Q2.CastOnUnit(minion);
+                                Spells.Q2.CastOnUnit(minion);
                             }
                         }
                     }
                     break;
                 case 1:
-                    foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(LucianSpells.Q.Range)))
+                    foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(Spells.Q.Range)))
                     {
-                        LucianSpells.Q.CastOnUnit(enemy);
+                        Spells.Q.CastOnUnit(enemy);
                     }
                     break;
             }
         }
         private static void ExtendedQKillSteal()
         {
-            var minions = ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(LucianSpells.Q.Range));
-            var target = HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(LucianSpells.Q2.Range));
+            var minions = ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(Spells.Q.Range));
+            var target = HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(Spells.Q2.Range));
             
-            if (target != null && (target.Distance(ObjectManager.Player.Position) > LucianSpells.Q.Range &&
-                                   target.Distance(ObjectManager.Player.Position) < LucianSpells.Q2.Range && 
-                                   target.CountEnemiesInRange(LucianSpells.Q2.Range) >= 1 && target.Health < LucianSpells.Q.GetDamage(target) && !target.IsDead))
+            if (target != null && (target.Distance(ObjectManager.Player.Position) > Spells.Q.Range &&
+                                   target.Distance(ObjectManager.Player.Position) < Spells.Q2.Range && 
+                                   target.CountEnemiesInRange(Spells.Q2.Range) >= 1 && target.Health < Spells.Q.GetDamage(target) && !target.IsDead))
             {
                 foreach (var minion in minions)
                 {
-                    if (LucianSpells.Q2.WillHit(target, ObjectManager.Player.ServerPosition.Extend(minion.ServerPosition, LucianSpells.Q2.Range),0,HitChance.VeryHigh))
+                    if (Spells.Q2.WillHit(target, ObjectManager.Player.ServerPosition.Extend(minion.ServerPosition, Spells.Q2.Range),0,HitChance.VeryHigh))
                     {
-                        LucianSpells.Q2.CastOnUnit(minion);
+                        Spells.Q2.CastOnUnit(minion);
                     }
                 }
             }
         }
         private static void KillstealW()
         {
-            var target = HeroManager.Enemies.Where(x => x.IsValidTarget(LucianSpells.W.Range)).
-                FirstOrDefault(x=> x.Health < LucianSpells.W.GetDamage(x));
+            var target = HeroManager.Enemies.Where(x => x.IsValidTarget(Spells.W.Range)).
+                FirstOrDefault(x=> x.Health < Spells.W.GetDamage(x));
 
-            var pred = LucianSpells.W.GetPrediction(target);
+            var pred = Spells.W.GetPrediction(target);
 
             if (target != null && pred.Hitchance >= HitChance.High)
             {
-                LucianSpells.W.Cast(pred.CastPosition);
+                Spells.W.Cast(pred.CastPosition);
             }
         }
         private static void Clear()
@@ -345,15 +345,15 @@ namespace LCS_Lucian
             {
                 return;
             }
-            if (LucianSpells.Q.IsReady() && Helper.LEnabled("lucian.q.clear") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
+            if (Spells.Q.IsReady() && Helper.LEnabled("lucian.q.clear") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
             {
-                foreach (var minion in MinionManager.GetMinions(ObjectManager.Player.ServerPosition, LucianSpells.Q.Range, MinionTypes.All,
+                foreach (var minion in MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Spells.Q.Range, MinionTypes.All,
                 MinionTeam.NotAlly))
                 {
-                    var prediction = Prediction.GetPrediction(minion, LucianSpells.Q.Delay,
+                    var prediction = Prediction.GetPrediction(minion, Spells.Q.Delay,
                         ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.CastRadius);
 
-                    var collision = LucianSpells.Q.GetCollision(ObjectManager.Player.Position.To2D(),
+                    var collision = Spells.Q.GetCollision(ObjectManager.Player.Position.To2D(),
                         new List<Vector2> { prediction.UnitPosition.To2D() });
 
                     foreach (var cs in collision)
@@ -364,18 +364,18 @@ namespace LCS_Lucian
                                 collision[0].Distance(ObjectManager.Player) <= 600
                                 && collision[0].Distance(ObjectManager.Player) <= 500)
                             {
-                                LucianSpells.Q.Cast(cs);
+                                Spells.Q.Cast(cs);
                             }
                         }
                     }
 
                 }
             }
-            if (LucianSpells.W.IsReady() && Helper.LEnabled("lucian.w.clear") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
+            if (Spells.W.IsReady() && Helper.LEnabled("lucian.w.clear") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
             {
-                if (LucianSpells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, LucianSpells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).MinionsHit >= Helper.LSlider("lucian.w.minion.hit.count"))
+                if (Spells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, Spells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).MinionsHit >= Helper.LSlider("lucian.w.minion.hit.count"))
                 {
-                    LucianSpells.W.Cast(LucianSpells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, LucianSpells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).Position);
+                    Spells.W.Cast(Spells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, Spells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).Position);
                 }
             }
         }
