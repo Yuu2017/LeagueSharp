@@ -38,6 +38,7 @@ namespace Jhin___The_Virtuoso
             {
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo.ExecuteCombo();
+                    None.ImmobileExecute();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     Jungle.ExecuteJungle();
@@ -49,7 +50,6 @@ namespace Jhin___The_Virtuoso
             }
             #endregion
             #region General Functions
-            None.ImmobileExecute();
             None.KillSteal();
             Ultimate.ComboUltimate();
             #endregion
