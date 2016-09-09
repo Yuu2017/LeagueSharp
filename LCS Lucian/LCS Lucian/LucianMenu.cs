@@ -20,7 +20,7 @@ namespace LCS_Lucian
                 comboMenu.AddItem(new MenuItem("lucian.disable.w.prediction", "Disable W Prediction").SetValue(true)).SetTooltip("10/10 for speed combo!", SharpDX.Color.GreenYellow);
                 comboMenu.AddItem(new MenuItem("lucian.r.combo", "Use R").SetValue(true)).SetTooltip("Uses R in Combo (Only Casting If Enemy Killable)", SharpDX.Color.GreenYellow);
                 comboMenu.AddItem(new MenuItem("lucian.combo.start.e", "Start Combo With E").SetValue(true)).SetTooltip("Starting Combo With E", SharpDX.Color.GreenYellow);
-                comboMenu.AddItem(new MenuItem("lucian.e.range", "(E) Range").SetValue(new Slider(475,1,475)));
+                comboMenu.AddItem(new MenuItem("lucian.e.range", "(E) Range").SetValue(new Slider(475,1,475))).SetTooltip("If you wanna do short dash just set that slider to 1");
                 Config.AddSubMenu(comboMenu);
             }
 
@@ -45,6 +45,7 @@ namespace LCS_Lucian
             var clearMenu = new Menu(":: Clear Settings", ":: Clear Settings");
             {
                 clearMenu.AddItem(new MenuItem("lucian.q.clear", "Use Q").SetValue(true)).SetTooltip("Uses Q in Clear", SharpDX.Color.GreenYellow);
+                clearMenu.AddItem(new MenuItem("lucian.q.harass.in.laneclear", "Use Extended (Q) Harass Enemy").SetValue(true)).SetTooltip("Uses Q in Clear", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.w.clear", "Use W").SetValue(true)).SetTooltip("Uses W in Clear", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.q.minion.hit.count", "(Q) Min. Minion Hit").SetValue(new Slider(3, 1, 5))).SetTooltip("Minimum minion count for Q", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.w.minion.hit.count", "(W) Min. Minion Hit").SetValue(new Slider(3, 1, 5))).SetTooltip("Minimum minion count for W", SharpDX.Color.GreenYellow);
@@ -90,7 +91,7 @@ namespace LCS_Lucian
                     }
                     miscMenu.AddSubMenu(gapcloseSet);
                 }
-
+                miscMenu.AddItem(new MenuItem("dodge.jarvan.ult", "Dodge JarvanIV Ult ?")).SetValue(true);
                 Config.AddSubMenu(miscMenu);
             }
             var drawMenu = new Menu(":: Draw Settings", ":: Draw Settings");

@@ -43,7 +43,23 @@ namespace LCS_Lucian
             Game.OnUpdate += LucianOnUpdate;
             Obj_AI_Base.OnDoCast += LucianOnDoCast;
             Drawing.OnDraw += LucianOnDraw;
+            Obj_AI_Base.OnProcessSpellCast += OnProcess;
         }
+
+        private static void OnProcess(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsEnemy && sender is Obj_AI_Hero && 
+                args.End.Distance(ObjectManager.Player.Position) < 100 &&
+                args.SData.Name == "JarvanIVCataclysm" && args.Slot == SpellSlot.R
+                && Helper.LEnabled("dodge.jarvan.ult") && 
+                (!ObjectManager.Player.Position.Extend(args.End, -Spells.E.Range).IsWall() || 
+                !ObjectManager.Player.Position.Extend(args.End, -Spells.E.Range).UnderTurret(true)))
+            {
+                var extpos = ObjectManager.Player.Position.Extend(args.End, - Spells.E.Range);
+                Spells.E.Cast(extpos);
+            }
+        }
+
         public static bool UltActive => ObjectManager.Player.HasBuff("LucianR");
 
         private static void ECast(Obj_AI_Hero enemy)
@@ -371,11 +387,29 @@ namespace LCS_Lucian
 
                 }
             }
+
             if (Spells.W.IsReady() && Helper.LEnabled("lucian.w.clear") && ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
             {
                 if (Spells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, Spells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).MinionsHit >= Helper.LSlider("lucian.w.minion.hit.count"))
                 {
                     Spells.W.Cast(Spells.W.GetCircularFarmLocation(MinionManager.GetMinions(ObjectManager.Player.Position, Spells.Q.Range, MinionTypes.All, MinionTeam.NotAlly)).Position);
+                }
+            }
+
+            if (Spells.Q.IsReady() && Helper.LEnabled("lucian.q.harass.in.laneclear") &&
+                ObjectManager.Player.Buffs.Any(buff => buff.Name != "lucianpassivebuff"))
+            {
+                var minions = ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(Spells.Q.Range));
+                var target = ObjectManager.Get<Obj_AI_Hero>().Where(x => x.IsValidTarget(Spells.Q2.Range)).FirstOrDefault(x => LucianMenu.Config.Item("lucian.white" + x.ChampionName).GetValue<bool>());
+                if (target.Distance(ObjectManager.Player.Position) > Spells.Q.Range && target.CountEnemiesInRange(Spells.Q2.Range) > 0)
+                {
+                    foreach (var minion in minions)
+                    {
+                        if (Spells.Q2.WillHit(target, ObjectManager.Player.ServerPosition.Extend(minion.ServerPosition, Spells.Q2.Range), 0, HitChance.VeryHigh))
+                        {
+                            Spells.Q2.CastOnUnit(minion);
+                        }
+                    }
                 }
             }
         }
