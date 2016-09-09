@@ -130,6 +130,15 @@ namespace LCS_Janna
                         esettings.AddSubMenu(ewhitelist);
                     }
 
+                    var etoautoattack = new Menu(":: E to Auto Attack",":: E to Auto Attack");
+                    {
+                        foreach (var ally in HeroManager.Allies.Where(x=> x.IsValid))
+                        {
+                            etoautoattack.AddItem(new MenuItem("autoattack." + ally.ChampionName,
+                                "(E): " + ally.ChampionName)).SetValue(false);
+                        }
+                    }
+
                     esettings.AddItem(new MenuItem("use.e.turret", "Use (E) On Turret").SetValue(true))
                     .ValueChanged += (s, ar) =>
                     {
@@ -247,6 +256,18 @@ namespace LCS_Janna
                     E.Cast((Obj_AI_Hero)args.Target);
                 }
 
+                if (sender is Obj_AI_Hero && sender.IsAlly && args.Target.IsEnemy && 
+                    args.Target.Type == GameObjectType.obj_AI_Hero && args.SData.IsAutoAttack() && 
+                    sender.Distance(ObjectManager.Player.Position) < E.Range &&
+                    ObjectManager.Player.ManaPercent >= Config.Item("min.mana.for.e").GetValue<Slider>().Value)
+                {
+
+                    if (Config.Item("autoattack."+sender.CharData.BaseSkinName) != null &&
+                        Config.Item("autoattack." + sender.CharData.BaseSkinName).GetValue<bool>())
+                    {
+                        E.CastOnUnit(sender);
+                    }
+                }
                 
             }
 
