@@ -237,7 +237,6 @@ namespace hYasuo.Champions
                 if (Spells.Q1.IsReady() && Utilities.Enabled("q2.combo") &&  
                     target.IsValidTarget(Spells.Q1.Range) && Spells.Q.Empowered())
                 {
-                    Game.PrintChat("succses");
                     var pred = Spells.Q1.GetPrediction(target);
                     if (pred.Hitchance >= Utilities.HikiChance("q2.hitchance"))
                     {
