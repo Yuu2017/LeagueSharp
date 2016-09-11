@@ -2,53 +2,53 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{843BAEF8-FB3E-4108-A8F4-7E1252A56A68}</ProjectGuid>
+    <ProjectGuid>{20F0CB3E-3D7E-4BAD-8F23-190F244D1B24}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Illaoi___Tentacle_Kitty</RootNamespace>
-    <AssemblyName>Illaoi - Tentacle Kitty</AssemblyName>
+    <RootNamespace>hYasuo</RootNamespace>
+    <AssemblyName>hYasuo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <PreBuildEvent />
-    <PostBuildEvent />
-    <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clipper_library">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\O46HgaACH\References\clipper_library.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\O46HgaACH\References\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\O46HgaACH\References\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\LeagueSharp.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="LeagueSharp.Data">
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\LeagueSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\O46HgaACH\References\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\O46HgaACH\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\O46HgaACH\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,14 +60,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Clear.cs" />
-    <Compile Include="Actions\Combo.cs" />
-    <Compile Include="Actions\Mixed.cs" />
-    <Compile Include="Champion\Illaoi.cs" />
+    <Compile Include="Champions\Yasuo.cs" />
+    <Compile Include="Extensions\DamageCalculator.cs" />
     <Compile Include="Extensions\DamageIndicator.cs" />
-    <Compile Include="Extensions\Provider.cs" />
-    <Compile Include="Handlers\Menus.cs" />
-    <Compile Include="Handlers\Spells.cs" />
+    <Compile Include="Extensions\Menus.cs" />
+    <Compile Include="Extensions\SpellDatabase.cs" />
+    <Compile Include="Extensions\Spells.cs" />
+    <Compile Include="Extensions\Utilities.cs" />
+    <Compile Include="Logics\YasuoE.cs" />
+    <Compile Include="Logics\YasuoWW.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
