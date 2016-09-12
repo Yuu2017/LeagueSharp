@@ -8,31 +8,34 @@ namespace hYasuo.Logics
     {
         public static void YasuoWindWallProtector(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsEnemy && sender.Type != GameObjectType.obj_AI_Hero && args.SData.IsAutoAttack())
+            if (sender is Obj_AI_Hero && sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero
+                && args.End.Distance(ObjectManager.Player.Position) < 400f && Menus.Config.Item("w.protect."+args.SData.Name) != null
+                && Menus.Config.Item("w.protect." + args.SData.Name).GetValue<bool>()
+                && Spells.W.IsReady())
             {
-                return;
+                Spells.W.Cast(ObjectManager.Player.Position.Extend(args.Start, Spells.W.Range));
             }
 
-            if (Spells.W.IsReady() && Menus.Config.Item("w.protect." + args.SData.Name).GetValue<bool>() && 
-                Menus.Config.Item("w.protect."+args.SData.Name) != null && 
-                args.End.Distance(ObjectManager.Player.Position) < 100 && sender is Obj_AI_Hero)
+            if (sender is Obj_AI_Hero && sender.IsEnemy && args.SData.TargettingType == SpellDataTargetType.Unit
+                && sender.Type == GameObjectType.obj_AI_Hero
+                && args.End.Distance(ObjectManager.Player.Position) < 400f && Menus.Config.Item("windwall.targetted." + args.SData.Name) != null
+                && Menus.Config.Item("windwall.targetted." + args.SData.Name).GetValue<bool>()
+                && Spells.W.IsReady())
             {
-                Spells.W.Cast(args.Start);
+                Spells.W.Cast(ObjectManager.Player.Position.Extend(args.Start, Spells.W.Range));
             }
+
         }
 
         public static void YasuoTargettedProtector(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!sender.IsEnemy && sender.Type != GameObjectType.obj_AI_Hero && args.SData.IsAutoAttack()
-                && args.SData.TargettingType != SpellDataTargetType.Unit)
+            if (sender is Obj_AI_Hero && sender.IsEnemy && args.SData.TargettingType == SpellDataTargetType.Unit
+                && sender.Type == GameObjectType.obj_AI_Hero && args.End.Distance(ObjectManager.Player.Position) < 400f 
+                && Menus.Config.Item("q3.target." + args.SData.Name) != null
+                && Menus.Config.Item("q3.target." + args.SData.Name).GetValue<bool>()
+                && Spells.Q3.IsReady() && Spells.Q.Empowered())
             {
-                return;
-            }
-
-            if (Spells.Q1.IsReady() && Spells.Q.Empowered() && Utilities.Enabled("q2.protect.targetted."+args.SData.Name) &&
-                Menus.Config.Item("q2.protect.targetted." + args.SData.Name) != null && sender is Obj_AI_Hero)
-            {
-                Spells.Q1.Cast(args.End);
+                Spells.Q3.Cast(ObjectManager.Player.Position.Extend(args.End , 500f));
             }
         }
     }

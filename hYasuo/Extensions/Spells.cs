@@ -12,7 +12,7 @@ namespace hYasuo.Extensions
         // <summary>
         /// Thats provide Q spell
         /// </summary>
-        public static Spell Q1;
+        public static Spell Q3;
         /// <summary>
         /// Thats provide W spell
         /// </summary>
@@ -32,13 +32,13 @@ namespace hYasuo.Extensions
         public static void Initialize()
         {
             Q = new Spell(SpellSlot.Q, 450f);
-            Q1 = new Spell(SpellSlot.Q, 1100f);
+            Q3 = new Spell(SpellSlot.Q, 1100f);
             W = new Spell(SpellSlot.W, 400f);
             E = new Spell(SpellSlot.E, 475f);
             R = new Spell(SpellSlot.R, 1250f);
 
             Q.SetSkillshot(0.4f, 20f, 1000f, false, SkillshotType.SkillshotLine);
-            Q1.SetSkillshot(0.4f, 90f, 1000f, false, SkillshotType.SkillshotLine); 
+            Q3.SetSkillshot(0.4f, 90f, 1000f, false, SkillshotType.SkillshotLine); 
         }
         /// <summary>
         /// Thats provide selected spell damage

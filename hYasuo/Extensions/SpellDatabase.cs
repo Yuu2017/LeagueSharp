@@ -56,6 +56,8 @@ namespace hYasuo.Extensions
         public Collisions Collisionable;
         public bool IsTargeted;
         public bool IsAAEmpower;
+        public bool YasuoQ3Dodgeable;
+        public bool WindwallDodgeable;
     }
 
     public class MovementBuffSpellData : SpellData
@@ -1092,7 +1094,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "AlZaharNetherGrasp",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1101,7 +1105,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Mordekaiser",
                     Slot = SpellSlot.R,
                     SpellName = "MordekaiserChildrenOfTheGrave",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1111,7 +1117,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "NocturneParanoia",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1121,7 +1129,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.E,
                     SpellName = "PuncturingTaunt",
                     IsDangerous = true,
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1131,7 +1141,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "SkarnerImpale",
                     IsDangerous = true,
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1140,7 +1152,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Vladimir",
                     Slot = SpellSlot.Q,
                     SpellName = "VladimirTransfusion",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1149,7 +1163,8 @@ namespace hYasuo.Extensions
                     ChampionName = "Vladimir",
                     Slot = SpellSlot.R,
                     SpellName = "VladimirHemoplague",
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false
                 });
 
             TargetedSpells.Add(
@@ -1159,7 +1174,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "InfiniteDuress",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1169,7 +1186,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "zedulttargetmark",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1180,6 +1199,8 @@ namespace hYasuo.Extensions
                     SpellName = "CurseoftheSadMummy",
                     Radius = 550,
                     IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1189,6 +1210,8 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "Disintegrate",
                     IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1198,7 +1221,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "DianaTeleport",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1207,7 +1232,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Fizz",
                     Slot = SpellSlot.Q,
                     SpellName = "FizzPiercingStrike",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1217,6 +1244,8 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "KhazixQ",
                     IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1225,7 +1254,9 @@ namespace hYasuo.Extensions
                    ChampionName = "KhaZix",
                    Slot = SpellSlot.Q, //evolved
                    SpellName = "khazixqlong",
-                   IsTargeted = true
+                   IsTargeted = true,
+                   YasuoQ3Dodgeable = false,
+                   WindwallDodgeable = false,
                });
 
             TargetedSpells.Add(
@@ -1235,7 +1266,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "BlindMonkRKick",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1244,7 +1277,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Malphite",
                     Slot = SpellSlot.Q,
                     SpellName = "SismicShard",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1253,7 +1288,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Maokai",
                     Slot = SpellSlot.W,
                     SpellName = "MaokaiUnstableGrowth",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1263,7 +1300,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "Terrify",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1272,7 +1311,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Renekton",
                     Slot = SpellSlot.W,
                     SpellName = "RenektonPreExecute",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1283,6 +1324,8 @@ namespace hYasuo.Extensions
                     SpellName = "RivenMartyr",
                     Radius = 270,
                     IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1292,7 +1335,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.W,
                     SpellName = "RunePrison",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1302,7 +1347,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.E,
                     SpellName = "NocturneUnspeakableHorror",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1312,7 +1359,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.W,
                     SpellName = "PantheonW",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1321,7 +1370,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Pantheon",
                     Slot = SpellSlot.Q,
                     SpellName = "PantheonQ",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1331,7 +1382,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "TrundlePain",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1341,17 +1394,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.E,
                     SpellName = "YasuoDashWrapper",
                     IsTargeted = true,
-                    IsDangerous = true
-                });
-
-            TargetedSpells.Add(
-                new SpellData
-                {
-                    ChampionName = "Taric",
-                    Slot = SpellSlot.E,
-                    SpellName = "Dazzle",
-                    IsTargeted = true,
                     IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1362,6 +1407,8 @@ namespace hYasuo.Extensions
                     SpellName = "GarenQAttack",
                     IsTargeted = true,
                     IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable= false,
                 });
 
             TargetedSpells.Add(
@@ -1371,7 +1418,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "GarenRPreCast",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1380,7 +1429,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Ekko",
                     Slot = SpellSlot.E,
                     SpellName = "EkkoEAttack",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1389,7 +1440,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Illaoi",
                     Slot = SpellSlot.W,
                     SpellName = "IllaoiWAttack",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1399,7 +1452,8 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "LeonaShieldOfDaybreakAttack",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1409,7 +1463,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.R,
                     SpellName = "DariusExecute",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
 
             TargetedSpells.Add(
@@ -1419,6 +1475,8 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "GangplankQWrapper",
                     IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1427,7 +1485,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Syndra",
                     Slot = SpellSlot.R,
                     SpellName = "SyndraR",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1436,7 +1496,9 @@ namespace hYasuo.Extensions
                     ChampionName = "Veigar",
                     Slot = SpellSlot.R,
                     SpellName = "VeigarPrimordialBurst",
-                    IsTargeted = true
+                    IsTargeted = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1446,7 +1508,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.W,
                     SpellName = "goldcardpreattack",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = false,
+                    WindwallDodgeable = true,
                 });
 
             TargetedSpells.Add(
@@ -1456,7 +1520,9 @@ namespace hYasuo.Extensions
                     Slot = SpellSlot.Q,
                     SpellName = "XenZhaoThrust3",
                     IsTargeted = true,
-                    IsDangerous = true
+                    IsDangerous = true,
+                    YasuoQ3Dodgeable = true,
+                    WindwallDodgeable = false,
                 });
             #endregion
         }

@@ -24,8 +24,8 @@ namespace hYasuo.Champions
             SpellDatabase.InitalizeSpellDatabase();
             Menus.Initialize();
 
-           //Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoWindWallProtector;
-           // Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoTargettedProtector;
+            Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoWindWallProtector;
+            Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoTargettedProtector;
             Game.OnUpdate += OnUpdate;
 
         }
@@ -59,10 +59,10 @@ namespace hYasuo.Champions
                     Spells.Q.Cast(target.Position);
                 }
 
-                if (Spells.Q1.IsReady() && Utilities.Enabled("q2.ks") && target.IsValidTarget(Spells.Q1.Range)
-                   && Spells.Q.Empowered() && Spells.Q1.GetDamage(target) > target.Health)
+                if (Spells.Q3.IsReady() && Utilities.Enabled("q2.ks") && target.IsValidTarget(Spells.Q3.Range)
+                   && Spells.Q.Empowered() && Spells.Q3.GetDamage(target) > target.Health)
                 {
-                    Spells.Q1.Cast(target.Position);
+                    Spells.Q3.Cast(target.Position);
                 }
 
                 if (Spells.E.IsReady() && Utilities.Enabled("e.ks") && target.IsValidTarget(Spells.E.Range)
@@ -116,7 +116,6 @@ namespace hYasuo.Champions
 
         private static void OnClear()
         {
-
             if (Spells.Q.IsReady() && Utilities.Enabled("q.clear") && !Spells.Q.Empowered())
             {
                 var min = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Spells.Q.Range);
@@ -126,12 +125,12 @@ namespace hYasuo.Champions
                 }
             }
 
-            if (Spells.Q1.IsReady() && Utilities.Enabled("q2.clear") && Spells.Q.Empowered())
+            if (Spells.Q3.IsReady() && Utilities.Enabled("q3.clear") && Spells.Q.Empowered())
             {
-                var min = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Spells.Q1.Range);
-                if (Spells.Q1.GetLineFarmLocation(min).MinionsHit >= Utilities.Slider("q2.hit.x.minion"))
+                var min = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Spells.Q3.Range);
+                if (Spells.Q3.GetLineFarmLocation(min).MinionsHit >= Utilities.Slider("q3.hit.x.minion"))
                 {
-                    Spells.Q1.Cast(Spells.Q1.GetLineFarmLocation(min).Position);
+                    Spells.Q3.Cast(Spells.Q3.GetLineFarmLocation(min).Position);
                 }
             }
 
@@ -160,10 +159,10 @@ namespace hYasuo.Champions
                 Spells.Q.Cast(mobs[0].Position);
             }
 
-            if (Spells.Q1.IsReady() && Utilities.Enabled("q2.jungle") &&
-                           Spells.Q.Empowered() && mobs[0].IsValidTarget(Spells.Q1.Range))
+            if (Spells.Q3.IsReady() && Utilities.Enabled("q3.jungle") &&
+                           Spells.Q.Empowered() && mobs[0].IsValidTarget(Spells.Q3.Range))
             {
-                Spells.Q1.Cast(mobs[0].Position);
+                Spells.Q3.Cast(mobs[0].Position);
             }
 
             if (Spells.E.IsReady() && Utilities.Enabled("e.jungle") && 
@@ -189,16 +188,17 @@ namespace hYasuo.Champions
                     }
                 }
 
-                if (Spells.Q1.IsReady() && Spells.Q.Empowered() && Utilities.Enabled("q2.harass")
-                    && target.IsValidTarget(Spells.Q1.Range))
+                if (Spells.Q3.IsReady() && Spells.Q.Empowered() && Utilities.Enabled("q3.harass")
+                    && target.IsValidTarget(Spells.Q3.Range))
                 {
-                    var pred = Spells.Q1.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q2.hitchance"))
+                    var pred = Spells.Q3.GetPrediction(target);
+                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
                     {
-                        Spells.Q1.Cast(pred.CastPosition);
+                        Spells.Q3.Cast(pred.CastPosition);
                     }
                 }
             }
+
             else
             {
                 if (Spells.Q.IsReady() && Utilities.Enabled("q.lasthit") && !Spells.Q.Empowered())
@@ -209,6 +209,19 @@ namespace hYasuo.Champions
                         Spells.Q.Cast(minion.Position);
                     }
                 }
+
+                if (Spells.E.IsReady() && Utilities.Enabled("e.lasthit") && !Spells.Q.Empowered())
+                {
+                    foreach (var minion in MinionManager.GetMinions(Spells.E.Range)
+                            .Where(x => x.IsValid && Spells.E.GetDamage(x) > x.Health))
+                    {
+                        if (!YasuoE.GetDashingEnd(minion).To3D().UnderTurret(true)) // turret check for dash end pos e
+                        {
+                            Spells.E.CastOnUnit(minion);
+                        }
+                    }
+                }
+
             }
         }
     
@@ -217,10 +230,21 @@ namespace hYasuo.Champions
             var dashlist = ObjectManager.Get<Obj_AI_Base>().Where(o => o.IsValidTarget(Spells.E.Range) && YasuoE.IsDashable(o) && (o.IsChampion() || o.IsMinion)).ToList();
             var target = TargetSelector.GetTarget(1100f, TargetSelector.DamageType.Physical);
 
-            if(Spells.E.IsReady() && Utilities.Enabled("e.combo"))
+            if (Utilities.Enabled("enemy.check.combo"))
             {
-                YasuoE.DashPos(Game.CursorPos, dashlist, true);
+                if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
+                {
+                    YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
+                }
             }
+            else
+            {
+                if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
+                {
+                    YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
+                }
+            }
+            
 
             if (target != null)
             {
@@ -234,13 +258,13 @@ namespace hYasuo.Champions
                     }
                 }
 
-                if (Spells.Q1.IsReady() && Utilities.Enabled("q2.combo") &&  
-                    target.IsValidTarget(Spells.Q1.Range) && Spells.Q.Empowered())
+                if (Spells.Q3.IsReady() && Utilities.Enabled("q3.combo") &&  
+                    target.IsValidTarget(Spells.Q3.Range) && Spells.Q.Empowered())
                 {
-                    var pred = Spells.Q1.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q2.hitchance"))
+                    var pred = Spells.Q3.GetPrediction(target);
+                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
                     {
-                        Spells.Q1.Cast(pred.CastPosition);
+                        Spells.Q3.Cast(pred.CastPosition);
                     }
                 }
                 
