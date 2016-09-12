@@ -34,10 +34,17 @@ namespace hYasuo.Extensions
 
                 var harassMenu = new Menu(":: Harass Settings", ":: Harass Settings");
                 {
+
+                    var toggleMenu = new Menu(":: Toggle Settings", ":: Toggle Settings").SetFontStyle(FontStyle.Bold, SharpDX.Color.Gold);
+                    {
+                        toggleMenu.AddItem(new MenuItem("q.toggle", "Use (Q)").SetValue(true));
+                        toggleMenu.AddItem(new MenuItem("q3.toggle", "Use (Q3)").SetValue(true));
+                        toggleMenu.AddItem(new MenuItem("toggle.active", "Toggle !").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Toggle)));
+                        harassMenu.AddSubMenu(toggleMenu);
+                    }
+
                     harassMenu.AddItem(new MenuItem("q.harass", "Use (Q)").SetValue(true));
                     harassMenu.AddItem(new MenuItem("q3.harass", "Use (Q3)").SetValue(true));
-                    harassMenu.AddItem(
-                        new MenuItem("harass.mana", "Min. Mana Percentage").SetValue(new Slider(50, 1, 99)));
                     Config.AddSubMenu(harassMenu);
                 }
 
@@ -172,7 +179,7 @@ namespace hYasuo.Extensions
                 }
                 Config.AddItem(new MenuItem("q.hitchance", ":: (Q) HITCHANCE").SetValue(new StringList(Utilities.HitchanceNameArray, 2))).SetFontStyle(FontStyle.Bold,Color.Crimson);
                 Config.AddItem(new MenuItem("q3.hitchance", ":: (Q3) HITCHANCE").SetValue(new StringList(Utilities.HitchanceNameArray, 2))).SetFontStyle(FontStyle.Bold, Color.Crimson);
-
+                Config.AddItem(new MenuItem("flee.key", "(FLEE)").SetValue(new KeyBind('Z', KeyBindType.Press)).SetTooltip("uses game cursor pos"));
 
                 Config.AddItem(
                     new MenuItem("credits.x1", "                          Developed by Hikigaya").SetFontStyle(

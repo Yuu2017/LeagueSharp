@@ -31,7 +31,7 @@ namespace hYasuo.Extensions
         /// </summary>
         public static void Initialize()
         {
-            Q = new Spell(SpellSlot.Q, 450f);
+            Q = new Spell(SpellSlot.Q, 425f);
             Q3 = new Spell(SpellSlot.Q, 1100f);
             W = new Spell(SpellSlot.W, 400f);
             E = new Spell(SpellSlot.E, 475f);

@@ -49,6 +49,43 @@ namespace hYasuo.Champions
                     break;
             }
 
+            if (Menus.Config.Item("flee.key").GetValue<KeyBind>().Active)
+            {
+                Orbwalking.Orbwalk(null, Game.CursorPos);
+                var dashlist = ObjectManager.Get<Obj_AI_Base>().Where(o => o.IsValidTarget(Spells.E.Range) 
+                && YasuoE.IsDashable(o)).ToList();
+
+                if (Spells.E.IsReady())
+                {
+                    YasuoE.DashPos(Game.CursorPos, dashlist,false);
+                }
+            }
+
+            if (Menus.Config.Item("toggle.active").GetValue<KeyBind>().Active)
+            {
+                var target = TargetSelector.GetTarget(Spells.Q3.Range, TargetSelector.DamageType.Physical);
+
+                if (Spells.Q.IsReady() && Menus.Config.Item("q.toggle").GetValue<bool>() 
+                    && target.IsValidTarget(Spells.Q.Range) && !Spells.Q.Empowered())
+                {
+                    var pred = Spells.Q.GetPrediction(target);
+                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
+                    {
+                        Spells.Q.Cast(pred.CastPosition);
+                    }
+                }
+
+                if (Spells.Q3.IsReady() && Menus.Config.Item("q3.toggle").GetValue<bool>()
+                    && target.IsValidTarget(Spells.Q3.Range) && Spells.Q.Empowered())
+                {
+                    var pred = Spells.Q3.GetPrediction(target);
+                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
+                    {
+                        Spells.Q3.Cast(pred.CastPosition);
+                    }
+                }
+            }
+
             if (Utilities.Enabled("ks.status"))
             {
                 var target = TargetSelector.GetTarget(1100f, TargetSelector.DamageType.Physical);
@@ -82,9 +119,14 @@ namespace hYasuo.Champions
             if (Menus.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.None && Utilities.Enabled("auto.stack")
                 && !Spells.Q.Empowered() && Spells.Q.IsReady())
             {
-                foreach (var minions in MinionManager.GetMinions(Spells.Q.Range).Where(x=> x.IsValid))
+                foreach (var minions in MinionManager.GetMinions(Spells.Q.Range).
+                    Where(x=> x.IsValid && x.Health < Spells.Q.GetDamage(x) && x.IsValidTarget(Spells.Q.Range)))
                 {
-                    Spells.Q.Cast(minions);
+                    var pred = Spells.Q.GetPrediction(minions);
+                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
+                    {
+                        Spells.Q.Cast(pred.CastPosition);
+                    }
                 }
             }
         }
