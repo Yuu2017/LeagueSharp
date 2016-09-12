@@ -229,22 +229,10 @@ namespace hYasuo.Champions
         {
             var dashlist = ObjectManager.Get<Obj_AI_Base>().Where(o => o.IsValidTarget(Spells.E.Range) && YasuoE.IsDashable(o) && (o.IsChampion() || o.IsMinion)).ToList();
             var target = TargetSelector.GetTarget(1100f, TargetSelector.DamageType.Physical);
-
-            if (Utilities.Enabled("enemy.check.combo"))
+            if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
             {
-                if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
-                {
-                    YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
-                }
+                YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
             }
-            else
-            {
-                if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
-                {
-                    YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
-                }
-            }
-            
 
             if (target != null)
             {
