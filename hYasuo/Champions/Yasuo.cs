@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using hYasuo.Extensions;
 using hYasuo.Logics;
 using LeagueSharp;
@@ -18,6 +14,9 @@ namespace hYasuo.Champions
             OnLoad();
         }
 
+        public static int HydraID => 3074;
+        public static int TiamatID => 3074;
+
         private static void OnLoad()
         {
             Spells.Initialize();
@@ -26,10 +25,51 @@ namespace hYasuo.Champions
 
             Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoWindWallProtector;
             Obj_AI_Base.OnProcessSpellCast += YasuoWW.YasuoTargettedProtector;
+            Obj_AI_Base.OnProcessSpellCast += YasuoE.GetTime;
+            Obj_AI_Base.OnProcessSpellCast += YasuoHydra;
+            Obj_AI_Base.OnProcessSpellCast += YasuoIncomingDamage.IncomingDamage;
+            Obj_AI_Base.OnDoCast += YasuoQReset;
+
             Game.OnUpdate += OnUpdate;
 
         }
 
+        private static void YasuoQReset(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || Menus.Config.Item("q.type").GetValue<StringList>().SelectedIndex != 1)
+            {
+                return;
+            }
+
+            if (args.Target.IsEnemy && args.SData.IsAutoAttack() && 
+                args.Target.Type == GameObjectType.obj_AI_Hero)
+            {
+                if (Spells.Q.IsReady() && Utilities.Enabled("q.combo") && 
+                    ((Obj_AI_Hero)args.Target).IsValidTarget(Spells.Q.Range)
+                    && !Spells.Q.Empowered())
+                {
+                    var pred = Spells.Q.GetPrediction(((Obj_AI_Hero)args.Target));
+                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
+                    {
+                        Spells.Q.Cast(pred.CastPosition);
+                    }
+                }
+            }
+        }
+
+        private static void YasuoHydra(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe)
+            {
+                return;
+            }
+
+            if (!args.SData.IsAutoAttack() && (args.Slot == SpellSlot.Q || args.Slot == SpellSlot.E)
+                && args.Target.IsEnemy && args.Target.Type == GameObjectType.obj_AI_Hero)
+            {
+                UseItemForCancel();
+            }
+        }
         private static void OnUpdate(EventArgs args)
         {
             switch (Menus.Orbwalker.ActiveMode)
@@ -68,21 +108,13 @@ namespace hYasuo.Champions
                 if (Spells.Q.IsReady() && Menus.Config.Item("q.toggle").GetValue<bool>() 
                     && target.IsValidTarget(Spells.Q.Range) && !Spells.Q.Empowered())
                 {
-                    var pred = Spells.Q.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
-                    {
-                        Spells.Q.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(target, Utilities.HikiChance("q.hitchance"), true);
                 }
 
                 if (Spells.Q3.IsReady() && Menus.Config.Item("q3.toggle").GetValue<bool>()
                     && target.IsValidTarget(Spells.Q3.Range) && Spells.Q.Empowered())
                 {
-                    var pred = Spells.Q3.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
-                    {
-                        Spells.Q3.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(target, Utilities.HikiChance("q3.hitchance"), true);
                 }
             }
 
@@ -93,13 +125,13 @@ namespace hYasuo.Champions
                 if (Spells.Q.IsReady() && Utilities.Enabled("q.ks") && target.IsValidTarget(Spells.Q.Range)
                     && !Spells.Q.Empowered() && Spells.Q.GetDamage(target) > target.Health)
                 {
-                    Spells.Q.Cast(target.Position);
+                    Spells.Q.Do(target, Utilities.HikiChance("q.hitchance"), true);
                 }
 
                 if (Spells.Q3.IsReady() && Utilities.Enabled("q2.ks") && target.IsValidTarget(Spells.Q3.Range)
                    && Spells.Q.Empowered() && Spells.Q3.GetDamage(target) > target.Health)
                 {
-                    Spells.Q3.Cast(target.Position);
+                    Spells.Q.Do(target, Utilities.HikiChance("q3.hitchance"), true);
                 }
 
                 if (Spells.E.IsReady() && Utilities.Enabled("e.ks") && target.IsValidTarget(Spells.E.Range)
@@ -122,12 +154,33 @@ namespace hYasuo.Champions
                 foreach (var minions in MinionManager.GetMinions(Spells.Q.Range).
                     Where(x=> x.IsValid && x.Health < Spells.Q.GetDamage(x) && x.IsValidTarget(Spells.Q.Range)))
                 {
-                    var pred = Spells.Q.GetPrediction(minions);
-                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
-                    {
-                        Spells.Q.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(minions, Utilities.HikiChance("q.hitchance"), true);
                 }
+            }
+        }
+
+        public static string HasCancelableItems()
+        {
+            if (Items.HasItem(TiamatID))
+            {
+                return "Tiamat";
+            }
+            else if (Items.HasItem(HydraID))
+            {
+                return "Hydra";
+            }
+            return null;
+        }
+
+        public static void UseItemForCancel()
+        {
+            if (HasCancelableItems() != null && HasCancelableItems() == "Tiamat" && Items.CanUseItem(TiamatID))
+            {
+                Items.UseItem(TiamatID);
+            }
+            if (HasCancelableItems() != null && HasCancelableItems() == "Hydra" && Items.CanUseItem(HydraID))
+            {
+                Items.UseItem(HydraID);
             }
         }
 
@@ -223,21 +276,13 @@ namespace hYasuo.Champions
                 if (Spells.Q.IsReady() && !Spells.Q.Empowered()
                 && Utilities.Enabled("q.harass") && target.IsValidTarget(Spells.Q.Range))
                 {
-                    var pred = Spells.Q.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
-                    {
-                        Spells.Q.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(target, Utilities.HikiChance("q.hitchance"), true);
                 }
 
                 if (Spells.Q3.IsReady() && Spells.Q.Empowered() && Utilities.Enabled("q3.harass")
                     && target.IsValidTarget(Spells.Q3.Range))
                 {
-                    var pred = Spells.Q3.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
-                    {
-                        Spells.Q3.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(target, Utilities.HikiChance("q3.hitchance"), true);
                 }
             }
 
@@ -257,13 +302,12 @@ namespace hYasuo.Champions
                     foreach (var minion in MinionManager.GetMinions(Spells.E.Range)
                             .Where(x => x.IsValid && Spells.E.GetDamage(x) > x.Health))
                     {
-                        if (!YasuoE.GetDashingEnd(minion).To3D().UnderTurret(true)) // turret check for dash end pos e
+                        if (!YasuoE.GetDashingEnd(minion).To3D().UnderTurret(true))
                         {
                             Spells.E.CastOnUnit(minion);
                         }
                     }
                 }
-
             }
         }
     
@@ -273,29 +317,52 @@ namespace hYasuo.Champions
             var target = TargetSelector.GetTarget(1100f, TargetSelector.DamageType.Physical);
             if (Spells.E.IsReady() && Utilities.Enabled("e.combo"))
             {
-                YasuoE.DashPos(Game.CursorPos, dashlist, !Utilities.Enabled("disable.e.safety"));
+                if (!Utilities.Enabled("disable.e.safety"))
+                {
+                    if (Utilities.Enabled("eqq.combo"))
+                    {
+                        YasuoE.DashPos(Game.CursorPos, dashlist, false);
+                    }
+                    else
+                    {
+                        if (Game.Time - YasuoE.lastetime >= 1)
+                        {
+                            YasuoE.DashPos(Game.CursorPos, dashlist, false);
+                        }
+                    }
+                }
+                else
+                {
+                    if (Utilities.Enabled("eqq.combo"))
+                    {
+                        YasuoE.DashPos(Game.CursorPos, dashlist, true);
+                    }
+                    else
+                    {
+                        if (Game.Time - YasuoE.lastetime >= 1)
+                        {
+                            YasuoE.DashPos(Game.CursorPos, dashlist, true);
+                        }
+                    }
+                }
+                
             }
 
             if (target != null)
             {
-                if (Spells.Q.IsReady() && Utilities.Enabled("q.combo") && target.IsValidTarget(Spells.Q.Range)
-                    && !Spells.Q.Empowered())
+                if (Menus.Config.Item("q.type").GetValue<StringList>().SelectedIndex == 0)
                 {
-                    var pred = Spells.Q.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q.hitchance"))
+                    if (Spells.Q.IsReady() && Utilities.Enabled("q.combo") && target.IsValidTarget(Spells.Q.Range)
+                        && !Spells.Q.Empowered())
                     {
-                        Spells.Q.Cast(pred.CastPosition);
+                        Spells.Q.Do(target, Utilities.HikiChance("q.hitchance"), true);
                     }
                 }
 
                 if (Spells.Q3.IsReady() && Utilities.Enabled("q3.combo") &&  
                     target.IsValidTarget(Spells.Q3.Range) && Spells.Q.Empowered())
                 {
-                    var pred = Spells.Q3.GetPrediction(target);
-                    if (pred.Hitchance >= Utilities.HikiChance("q3.hitchance"))
-                    {
-                        Spells.Q3.Cast(pred.CastPosition);
-                    }
+                    Spells.Q.Do(target, Utilities.HikiChance("q3.hitchance"), true);
                 }
                 
                 if (Spells.R.IsReady() && 

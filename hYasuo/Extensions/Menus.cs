@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp.Common;
 using Color = SharpDX.Color;
 
@@ -24,7 +20,9 @@ namespace hYasuo.Extensions
                 {
                     comboMenu.AddItem(new MenuItem("q.combo", "Use (Q)").SetValue(true));
                     comboMenu.AddItem(new MenuItem("q3.combo", "Use (Q3)").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("min.q3.combo", "Use (Q3)").SetValue(true));
                     comboMenu.AddItem(new MenuItem("e.combo", "Use (E)").SetValue(true));
+                    comboMenu.AddItem(new MenuItem("eqq.combo", "Try (E-Q) Always").SetValue(true));
                     //comboMenu.AddItem(new MenuItem("enemy.check.combo", "Dont Spam (E) ?").SetValue(true)).SetTooltip("If Enemy in E Range and Have Yasuo E Debuff, It not uses E for gapclose anymore");
                     comboMenu.AddItem(new MenuItem("disable.e.safety", "Disable (E) Safety").SetValue(false)).SetTooltip("It disables e safety check. 10/10 for under turret dives");
                     comboMenu.AddItem(new MenuItem("r.combo", "Use (R)").SetValue(true));
@@ -35,7 +33,7 @@ namespace hYasuo.Extensions
                 var harassMenu = new Menu(":: Harass Settings", ":: Harass Settings");
                 {
 
-                    var toggleMenu = new Menu(":: Toggle Settings", ":: Toggle Settings").SetFontStyle(FontStyle.Bold, SharpDX.Color.Gold);
+                    var toggleMenu = new Menu(":: Toggle Settings", ":: Toggle Settings").SetFontStyle(FontStyle.Bold, Color.Gold);
                     {
                         toggleMenu.AddItem(new MenuItem("q.toggle", "Use (Q)").SetValue(true));
                         toggleMenu.AddItem(new MenuItem("q3.toggle", "Use (Q3)").SetValue(true));
@@ -101,7 +99,8 @@ namespace hYasuo.Extensions
                         {
                             foreach (var spell in HeroManager.Enemies.SelectMany(enemy => SpellDatabase.EvadeableSpells.Where(p => p.ChampionName == enemy.ChampionName && p.IsSkillshot)))
                             {
-                                evademenu.AddItem(new MenuItem(string.Format("w.protect.{0}", spell.SpellName), string.Format("{0} ({1})", spell.ChampionName, spell.Slot)).SetValue(true));
+                                evademenu.AddItem(new MenuItem($"w.protect.{spell.SpellName}",
+                                    $"{spell.ChampionName} ({spell.Slot})").SetValue(true));
                             }
                             windwall.AddSubMenu(evademenu);
                         }
@@ -110,7 +109,8 @@ namespace hYasuo.Extensions
                         {
                             foreach (var spell in HeroManager.Enemies.SelectMany(enemy => SpellDatabase.TargetedSpells.Where(p => p.ChampionName == enemy.ChampionName && p.WindwallDodgeable)))
                             {
-                                targettedmenu.AddItem(new MenuItem(string.Format("windwall.targetted.{0}", spell.SpellName), string.Format("{0} ({1})", spell.ChampionName, spell.Slot)).SetValue(true));
+                                targettedmenu.AddItem(new MenuItem($"windwall.targetted.{spell.SpellName}",
+                                    $"{spell.ChampionName} ({spell.Slot})").SetValue(true));
                             }
                             windwall.AddSubMenu(targettedmenu);
                         }
@@ -118,18 +118,21 @@ namespace hYasuo.Extensions
                         esettings.AddSubMenu(windwall);
                     }
 
-                    var q3dodge = new Menu("(Q3 TARGETTED)", "(Q3) TARGETTED");
+                    var q3Dodge = new Menu("(Q3 TARGETTED)", "(Q3) TARGETTED");
                     {
                         var targettedmenu = new Menu(":: Protectable Targetted Spells", ":: Protectable Targetted Spells");
                         {
                             foreach (var spell in HeroManager.Enemies.SelectMany(enemy => SpellDatabase.TargetedSpells.Where(p => p.ChampionName == enemy.ChampionName && p.YasuoQ3Dodgeable)))
                             {
-                                targettedmenu.AddItem(new MenuItem(string.Format("q3.target.{0}", spell.SpellName), string.Format("{0} ({1})", spell.ChampionName, spell.Slot)).SetValue(true));
+                                targettedmenu.AddItem(new MenuItem($"q3.target.{spell.SpellName}",
+                                    $"{spell.ChampionName} ({spell.Slot})").SetValue(true));
                             }
-                            q3dodge.AddSubMenu(targettedmenu);
+                            q3Dodge.AddSubMenu(targettedmenu);
                         }
-                        esettings.AddSubMenu(q3dodge);
+                        esettings.AddSubMenu(q3Dodge);
                     }
+                    esettings.AddItem(new MenuItem("use.ww.incomingdamage", "Use (WINDWALL) for Incoming Damage ").SetValue(true))
+                        .SetTooltip("If enemy damage > yasuo health. yasuo uses w for protect himself from enemy skillshots.");
                     Config.AddSubMenu(esettings);
                 }
 
@@ -177,19 +180,27 @@ namespace hYasuo.Extensions
                     miscMenu.AddItem(new MenuItem("auto.stack", "Auto Stack (Q)").SetValue(true));
                     Config.AddSubMenu(miscMenu);
                 }
+                Config.AddItem(new MenuItem("q.type", "Q Type").SetValue(new StringList(new[] { "Normal", "After Attack" }, 1))).SetTooltip("not supports empowered q");
                 Config.AddItem(new MenuItem("q.hitchance", ":: (Q) HITCHANCE").SetValue(new StringList(Utilities.HitchanceNameArray, 2))).SetFontStyle(FontStyle.Bold,Color.Crimson);
                 Config.AddItem(new MenuItem("q3.hitchance", ":: (Q3) HITCHANCE").SetValue(new StringList(Utilities.HitchanceNameArray, 2))).SetFontStyle(FontStyle.Bold, Color.Crimson);
                 Config.AddItem(new MenuItem("flee.key", "(FLEE)").SetValue(new KeyBind('Z', KeyBindType.Press)).SetTooltip("uses game cursor pos"));
 
+                Config.AddItem(new MenuItem("prediction", ":: Choose Prediction").SetValue(new StringList(new[] { "Common", "Sebby", "sPrediction", "SDK" }, 1)))
+                    .ValueChanged += (s, ar) =>
+                    {
+                        Config.Item("pred.info").Show(ar.GetNewValue<StringList>().SelectedIndex == 2);
+                    };
+                Config.AddItem(new MenuItem("pred.info", "                 PRESS F5 FOR LOAD SPREDICTION").SetFontStyle(System.Drawing.FontStyle.Bold))
+                    .Show(Config.Item("prediction").GetValue<StringList>().SelectedIndex == 2);
+
+                if (Config.Item("prediction").GetValue<StringList>().SelectedIndex == 2)
+                {
+                    SPrediction.Prediction.Initialize(Config, ":: SPREDICTION");
+                }
+
                 Config.AddItem(
                     new MenuItem("credits.x1", "                          Developed by Hikigaya").SetFontStyle(
                         FontStyle.Bold, Color.DodgerBlue));
-
-                /*Config.AddItem(
-                new MenuItem("credits.x3", "                 " +
-                                           " \u221A \u221A \u221A \u221A \u221A #FREEKARL " +
-                                           "\u221A \u221A \u221A \u221A \u221A").SetFontStyle(
-                    FontStyle.Bold, Color.Crimson));*/
 
             }
             Config.AddToMainMenu();

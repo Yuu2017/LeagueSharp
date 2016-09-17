@@ -13,6 +13,8 @@ namespace hYasuo.Logics
 {
     internal static class YasuoE
     {
+        public static float lastetime { get; set; }
+        public static float lastqtime { get; set; }
 
         public static bool IsDashable(Obj_AI_Base target)
         {
@@ -44,6 +46,24 @@ namespace hYasuo.Logics
             if (eMinion[0] != null)
             {
                 Spells.E.Cast(eMinion[0]);
+            }
+        }
+
+        public static void GetTime(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe)
+            {
+                return;
+            }
+            if (args.SData.Name == ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.Name 
+                || args.Slot == SpellSlot.E)
+            {
+                lastetime = Game.Time;
+            }
+            if (args.SData.Name == ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.Name
+                || args.Slot == SpellSlot.Q)
+            {
+                lastqtime = Game.Time;
             }
         }
 
