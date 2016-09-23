@@ -121,7 +121,7 @@ namespace Hikigaya_Syndra
 
         public static float RealUltimateDamage(Obj_AI_Base enemy)
         {
-            return R.GetDamage(enemy)*ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Ammo;
+            return R.GetDamage(enemy)*ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Ammo;
         }
 
         public static float TotalDamage(Obj_AI_Base enemy)
