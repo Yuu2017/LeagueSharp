@@ -119,6 +119,11 @@ namespace Hikigaya_Syndra
             UseE(target);
         }
 
+        public static float RealUltimateDamage(Obj_AI_Base enemy)
+        {
+            return R.GetDamage(enemy)*ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Ammo;
+        }
+
         public static float TotalDamage(Obj_AI_Base enemy)
         {
             var damage = 0f;
@@ -140,7 +145,7 @@ namespace Hikigaya_Syndra
             if (R.IsReady() && Config.Item("r.combo").GetValue<bool>())
             {
                 damage += (float)ObjectManager.Player.CalcDamage(enemy, Damage.DamageType.Magical,
-                    R.GetDamage(enemy)) * 3;
+                    RealUltimateDamage(enemy));
             }
             if (IgniteSlot != SpellSlot.Unknown && ObjectManager.Player.Spellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
                 Config.Item("r.combo").GetValue<bool>())

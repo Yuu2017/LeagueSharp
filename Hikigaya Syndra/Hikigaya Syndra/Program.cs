@@ -427,7 +427,7 @@ namespace Hikigaya_Syndra
                 foreach (var enemy in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && !Helper.BuffCheck(x) &&
                     Config.Item("r.combo."+x.ChampionName).GetValue<bool>() && DetectCollision(x)))
                 {
-                    if (enemy.Health < R.GetDamage(enemy))
+                    if (enemy.Health < Helper.RealUltimateDamage(enemy))
                     {
                         R.CastOnUnit(enemy);
                         R.LastCastAttemptT = Environment.TickCount;
