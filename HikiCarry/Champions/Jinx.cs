@@ -172,10 +172,25 @@ namespace HikiCarry.Champions
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     OnClear();
                     break;
+                    case Orbwalking.OrbwalkingMode.LastHit:
+                    OnLastHit();
+                    break;
             }
 
             ImmobileTarget();
         }
+
+        private void OnLastHit()
+        {
+            if (Q.IsReady())
+            {
+                if (IsFishBone)
+                {
+                    Q.Cast();
+                }
+            }
+        }
+
         private void OnCombo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
