@@ -1,4 +1,5 @@
 ﻿using System;
+using HikiCarry.Core.Plugins;
 using HikiCarry.Core.Utilities;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -91,6 +92,34 @@ namespace HikiCarry.Champions
                     wCombo.AddSubMenu(skalista);
                 }
                 Initializer.Config.AddSubMenu(wCombo);
+            }
+
+            var drawMenu = new Menu("Draw Settings", "Draw Settings");
+            {
+                var drawDamageMenu = new MenuItem("RushDrawEDamage", "Combo Damage").SetValue(true);
+                var drawFill = new MenuItem("RushDrawEDamageFill", "Combo Damage Fill").SetValue(new Circle(true, System.Drawing.Color.Gold));
+
+                drawMenu.SubMenu("Damage Draws").AddItem(drawDamageMenu);
+                drawMenu.SubMenu("Damage Draws").AddItem(drawFill);
+
+                DamageIndicator.DamageToUnit = KalistaLogics.ChampionTotalDamage;
+                DamageIndicator.Enabled = drawDamageMenu.GetValue<bool>();
+                DamageIndicator.Fill = drawFill.GetValue<Circle>().Active;
+                DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
+
+                drawDamageMenu.ValueChanged +=
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
+                {
+                    DamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
+
+                drawFill.ValueChanged +=
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
+                {
+                    DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
+                    DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
+                };
+                Initializer.Config.AddSubMenu(drawMenu);
             }
 
             Initializer.Config.AddItem(new MenuItem("saveSupport", "Save Support [R]",true).SetValue(true));
