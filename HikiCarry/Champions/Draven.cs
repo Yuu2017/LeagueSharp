@@ -56,6 +56,17 @@ namespace HikiCarry.Champions
                 Initializer.Config.AddSubMenu(comboMenu);
             }
 
+            var harassmenu = new Menu("Harass Settings","Harass Settings");
+            {
+                harassmenu.AddItem(new MenuItem("draven.q.harass", "Use Q", true).SetValue(true));
+                harassmenu.AddItem(
+                    new MenuItem("draven.q.harass.axe.count", "Min. Axe Count", true).SetValue(new Slider(2, 1, 2)));
+                harassmenu.AddItem(new MenuItem("draven.e.harass", "Use E", true).SetValue(true));
+                harassmenu.AddItem(
+                    new MenuItem("draven.harass.mana", "Min. Harass Mana", true).SetValue(new Slider(60, 1, 99)));
+                Initializer.Config.AddSubMenu(harassmenu);
+            }
+
             var clearMenu = new Menu("Clear Settings", "Clear Settings");
             {
                 clearMenu.AddItem(new MenuItem("draven.q.clear", "Use Q",true).SetValue(true));
@@ -202,6 +213,9 @@ namespace HikiCarry.Champions
                 case Orbwalking.OrbwalkingMode.Combo:
                     OnCombo();
                     break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    OnHarass();
+                    break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     OnClear();
                     OnJungle();
@@ -209,6 +223,30 @@ namespace HikiCarry.Champions
             }
 
             CatchAxe();
+        }
+
+        private void OnHarass()
+        {
+            if (ObjectManager.Player.ManaPercent < Utilities.Slider("harass.mana"))
+            {
+                return;
+            }
+            var target = TargetSelector.GetTarget(3500f, TargetSelector.DamageType.Physical);
+            if (target != null)
+            {
+                if (Q.IsReady() && LastQTime + 100 < Environment.TickCount && target.IsValidTarget(Q.Range)
+                    && Utilities.Enabled("draven.q.harass") &&
+                    CurrentAxes < Utilities.Slider("draven.q.harass.axe.count"))
+                {
+                    Q.Cast();
+                }
+
+                if (E.IsReady() && Utilities.Enabled("draven.e.harass") && target.IsValidTarget(E.Range))
+                {
+                    E.Do(target, Utilities.HikiChance("hitchance"));
+                }
+
+            }
         }
 
         public static void CatchAxe()
@@ -362,11 +400,9 @@ namespace HikiCarry.Champions
                         100 * (float)Math.PI / 180,
                         600).IsInside(axe.Object.Position);
                     return sectorpoly;
-
                 default:
-                    var circlepoly = new Geometry.Polygon.Circle(
-                        ObjectManager.Player.Position.Extend(Game.CursorPos, Utilities.Slider("catch.radius")),
-                        Utilities.Slider("catch.radius")).IsInside(axe.Object.Position);
+                    var circlepoly = new Geometry.Polygon.Circle(Game.CursorPos, Utilities.Slider("catch.radius"))
+                        .IsInside(axe.Object.Position);
                     return circlepoly;
             }
         }

@@ -217,12 +217,12 @@ namespace HikiCarry.Champions
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
             if (target != null)
             {
-                if (Q.IsReady() && Utilities.Enabled("q.combo") && target.IsValidTarget(Q.Range))
+                if (Q.IsReady() && Utilities.Enabled("q.harass") && target.IsValidTarget(Q.Range))
                 {
                     Q.Do(target, Utilities.HikiChance("hitchance"));
                 }
 
-                if (E.IsReady() && Utilities.Enabled("e.combo") && target.IsValidTarget(E.Range))
+                if (E.IsReady() && Utilities.Enabled("e.harass") && target.IsValidTarget(E.Range))
                 {
                     E.Do(target, Utilities.HikiChance("hitchance"));
                 }

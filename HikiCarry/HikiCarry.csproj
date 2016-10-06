@@ -82,12 +82,6 @@
     <Compile Include="Core\Activator\Cleanser.cs" />
     <Compile Include="Core\Plugins\DamageIndicator.cs" />
     <Compile Include="Core\Plugins\DynamicInitializer.cs" />
-    <Compile Include="Core\Plugins\JhinModes\Clear.cs" />
-    <Compile Include="Core\Plugins\JhinModes\Combo.cs" />
-    <Compile Include="Core\Plugins\JhinModes\Jungle.cs" />
-    <Compile Include="Core\Plugins\JhinModes\Mixed.cs" />
-    <Compile Include="Core\Plugins\JhinModes\None.cs" />
-    <Compile Include="Core\Plugins\JhinModes\Ultimate.cs" />
     <Compile Include="Core\Plugins\SpellDatabase.cs" />
     <Compile Include="Core\Utilities\KalistaLogics.cs" />
     <Compile Include="Initializer.cs" />
