@@ -93,6 +93,8 @@ namespace HikiCarry.Champions
                 };
                 Initializer.Config.AddSubMenu(drawMenu);
             }
+
+            Initializer.Config.AddItem(new MenuItem("safety.q", "Safety (Q)", true).SetValue(true)).SetTooltip("omfgabriel");
             Game.OnUpdate += VarusOnUpdate;
 
         }
@@ -175,8 +177,18 @@ namespace HikiCarry.Champions
                         R.Do(target, Utilities.HikiChance("hitchance"));
                     }
                 }
-                
             }
+
+            if (Q.IsCharging && Utilities.Enabled("safety.q"))
+            {
+                foreach (var enemy in HeroManager.Enemies.Where(x => x.Distance(ObjectManager.Player.Position) < 
+                ObjectManager.Player.AttackRange && x.IsValid))
+                {
+                    Q.Do(enemy,Utilities.HikiChance("hitchance"));
+                }
+            }
+
+
 
         }
 
