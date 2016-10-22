@@ -45,8 +45,8 @@ namespace Illaoi___Tentacle_Kitty
             E = new Spell(SpellSlot.E, 900);
             R = new Spell(SpellSlot.R, 450);
 
-            Q.SetSkillshot(.484f, 0, 500, false, SkillshotType.SkillshotCircle);
-            E.SetSkillshot(.066f, 50, 1900, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.75f, 100f, float.MaxValue, false, SkillshotType.SkillshotLine);
+            E.SetSkillshot(0.066f, 50f, 1900f, true, SkillshotType.SkillshotLine);
 
             Config = new Menu("Illaoi - Tentacle Kitty", "Illaoi - Tentacle Kitty", true);
             {
