@@ -14,8 +14,6 @@ namespace LCS_Lucian
 
     class LucianDrawing
     {
-        public static Random random;
-
         public static void Init()
         {
 

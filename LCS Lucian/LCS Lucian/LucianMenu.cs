@@ -45,7 +45,6 @@ namespace LCS_Lucian
             var clearMenu = new Menu(":: Clear Settings", ":: Clear Settings");
             {
                 clearMenu.AddItem(new MenuItem("lucian.q.clear", "Use Q").SetValue(true)).SetTooltip("Uses Q in Clear", SharpDX.Color.GreenYellow);
-                clearMenu.AddItem(new MenuItem("lucian.q.harass.in.laneclear", "Use Extended (Q) Harass Enemy").SetValue(true)).SetTooltip("Uses Q in Clear", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.w.clear", "Use W").SetValue(true)).SetTooltip("Uses W in Clear", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.q.minion.hit.count", "(Q) Min. Minion Hit").SetValue(new Slider(3, 1, 5))).SetTooltip("Minimum minion count for Q", SharpDX.Color.GreenYellow);
                 clearMenu.AddItem(new MenuItem("lucian.w.minion.hit.count", "(W) Min. Minion Hit").SetValue(new Slider(3, 1, 5))).SetTooltip("Minimum minion count for W", SharpDX.Color.GreenYellow);
