@@ -23,7 +23,7 @@ namespace hCamille.Champions
 
         private void CamilleOnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsMe && args.Slot == SpellSlot.Q && Menus.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
+            if (sender.IsMe && args.SData.IsAutoAttack() && Menus.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo
                 && Menus.Config.Item("q.mode").GetValue<StringList>().SelectedIndex == 0 && Spells.Q.IsReady() && Utilities.Enabled("q.combo"))
             {
                 Spells.Q.Cast();
@@ -65,7 +65,7 @@ namespace hCamille.Champions
                 if (Spells.W.IsReady() && Utilities.Enabled("w.combo") && target.IsValidTarget(Spells.W.Range))
                 {
                     var pred = Spells.W.GetPrediction(target);
-                    if (pred.Hitchance >= HitChance.High)
+                    if (pred.Hitchance >= HitChance.Medium)
                     {
                         Spells.W.Cast(pred.CastPosition);
                     }
