@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +21,23 @@ namespace hCamille.Extensions
 
                 var combomenu = new Menu("Combo Settings", "Combo Settings");
                 {
+                    combomenu.AddItem(new MenuItem("q.settings", "                            [Q] Settings").SetFontStyle(FontStyle.Bold,
+                        SharpDX.Color.Gold));
                     combomenu.AddItem(new MenuItem("q.combo", "Use [Q] ").SetValue(true));
                     combomenu.AddItem(new MenuItem("q.mode", "[Q] Type").SetValue(new StringList(new[] { "After Attack", "In AA Range" })));
+
+                    combomenu.AddItem(new MenuItem("W.settings", "                            [W] Settings").SetFontStyle(FontStyle.Bold,
+                        SharpDX.Color.Gold));
                     combomenu.AddItem(new MenuItem("w.combo", "Use [W] ").SetValue(true));
+                    combomenu.AddItem(new MenuItem("w.mode", " [W Mode]").SetValue(new StringList(new[] { "While Dashing", "Always" }, 1)));
+
+                    combomenu.AddItem(new MenuItem("E.settings", "                            [E] Settings").SetFontStyle(FontStyle.Bold,
+                        SharpDX.Color.HotPink));
                     combomenu.AddItem(new MenuItem("e.combo", "Use [E] ").SetValue(true));
+                    combomenu.AddItem(new MenuItem("wall.search.range", "[E] Wall Search Range").SetValue(new Slider(1300, 1, 2500))).SetTooltip("1300 is recommenced");
+                    combomenu.AddItem(new MenuItem("wall.distance.to.enemy", "[E] Max Wall Distance to Enemy").SetValue(new Slider(865, 1, 1500))).SetTooltip("865 is recommenced");
+                    combomenu.AddItem(new MenuItem("enemy.search.range", "[E] Enemy Search Range").SetValue(new Slider(1365, 1365, 1900))).SetTooltip("1365 is recommenced (1365 -> E.Range + 500)");
+                    combomenu.AddItem(new MenuItem("max.enemy.count", "[E] Max Enemy Count").SetValue(new Slider(5, 1, 5)));
                     Config.AddSubMenu(combomenu);
                 }
 
@@ -40,7 +54,7 @@ namespace hCamille.Extensions
                         }
                         ultimatemenu.AddSubMenu(whitelist);
                     }
-
+                    ultimatemenu.AddItem(new MenuItem("r.mode", "[R] Type").SetValue(new StringList(new[] { "Auto", "Only Selected" })));
                     Config.AddSubMenu(ultimatemenu);
                 }
 
@@ -65,7 +79,16 @@ namespace hCamille.Extensions
                     junglemenu.AddItem(new MenuItem("w.jungle", "Use [W]").SetValue(true));
                     Config.AddSubMenu(junglemenu);
                 }
-                
+
+                Config.AddItem(
+                    new MenuItem("keys", "                                      Keys").SetFontStyle(
+                        FontStyle.Bold, SharpDX.Color.DodgerBlue));
+                Config.AddItem(
+                    new MenuItem("flee", "Flee!").SetValue(new KeyBind("A".ToCharArray()[0],
+                        KeyBindType.Press)));
+                Config.AddItem(
+                    new MenuItem("credits.x1", "                          Developed by Hikigaya").SetFontStyle(
+                        FontStyle.Bold, SharpDX.Color.Gold));
                 Config.AddToMainMenu();
             }
         }
