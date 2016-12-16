@@ -38,6 +38,153 @@ namespace hCamille.Champions
             Obj_AI_Base.OnIssueOrder += OnIssueOrder;
             Drawing.OnDraw += OnDraw;
             Obj_AI_Base.OnProcessSpellCast += OnProcess;
+            AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
+            Interrupter2.OnInterruptableTarget += OnInterrupt;
+
+        }
+
+        private void OnInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
+        {
+            if (sender.IsEnemy && args.DangerLevel > Interrupter2.DangerLevel.Medium)
+            {
+                var result = ObjectManager.Player;
+                var rng = Utilities.Slider("wall.search.range");
+                var listPoint = new List<Tuple<Vector2, float>>();
+                for (var i = 0; i <= 360; i += 1)
+                {
+                    var cosX = Math.Cos(i * Math.PI / 180);
+                    var sinX = Math.Sin(i * Math.PI / 180);
+                    var pos1 = new Vector3(
+                        (float)(result.Position.X + rng * cosX), (float)(result.Position.Y + rng * sinX),
+                        ObjectManager.Player.Position.Z);
+                    var time = Utils.TickCount;
+                    for (int j = 0; j < rng; j += 100)
+                    {
+                        var pos = new Vector3(
+                            (float)(result.Position.X + j * cosX), (float)(result.Position.Y + j * sinX),
+                            ObjectManager.Player.Position.Z);
+                        if (NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Wall) || NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Building))
+                        {
+                            if (j != 0)
+                            {
+                                int left = j - 99, right = j;
+                                do
+                                {
+                                    var middle = (left + right) / 2;
+                                    pos = new Vector3(
+                                        (float)(result.Position.X + middle * cosX), (float)(result.Position.Y + middle * sinX),
+                                        ObjectManager.Player.Position.Z);
+                                    if (NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Wall) || NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Building))
+                                    {
+                                        right = middle;
+                                    }
+                                    else
+                                    {
+                                        left = middle + 1;
+                                    }
+                                } while (left < right);
+                            }
+                            pos1 = pos;
+                            time = Utils.TickCount;
+                            break;
+                        }
+                    }
+
+                    listPoint.Add(new Tuple<Vector2, float>(pos1.To2D(), time));
+                }
+                var target = sender;
+                if (!OnWall)
+                {
+                    for (int i = 0; i < listPoint.Count - 1; i++)
+                    {
+                        if (listPoint[i].Item1.IsWall() && listPoint[i].Item1.Distance(ObjectManager.Player.Position) < Utilities.Slider("wall.distance.to.enemy")
+                             && listPoint[i].Item1.Distance(target.Position) < 500 && target.IsCastingInterruptableSpell(false) && !listPoint[i].Item1.To3D().UnderTurret(true))
+                        {
+                            Spells.E.Cast(listPoint[i].Item1);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (gapcloser.Sender != null && gapcloser.Sender.IsEnemy && gapcloser.End.Distance(ObjectManager.Player.Position) < 300)
+            {
+                var result = ObjectManager.Player;
+                var rng = Utilities.Slider("wall.search.range");
+                var listPoint = new List<Tuple<Vector2, float>>();
+                for (var i = 0; i <= 360; i += 1)
+                {
+                    var cosX = Math.Cos(i * Math.PI / 180);
+                    var sinX = Math.Sin(i * Math.PI / 180);
+                    var pos1 = new Vector3(
+                        (float)(result.Position.X + rng * cosX), (float)(result.Position.Y + rng * sinX),
+                        ObjectManager.Player.Position.Z);
+                    var time = Utils.TickCount;
+                    for (int j = 0; j < rng; j += 100)
+                    {
+                        var pos = new Vector3(
+                            (float)(result.Position.X + j * cosX), (float)(result.Position.Y + j * sinX),
+                            ObjectManager.Player.Position.Z);
+                        if (NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Wall) || NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Building))
+                        {
+                            if (j != 0)
+                            {
+                                int left = j - 99, right = j;
+                                do
+                                {
+                                    var middle = (left + right) / 2;
+                                    pos = new Vector3(
+                                        (float)(result.Position.X + middle * cosX), (float)(result.Position.Y + middle * sinX),
+                                        ObjectManager.Player.Position.Z);
+                                    if (NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Wall) || NavMesh.GetCollisionFlags(pos).HasFlag(CollisionFlags.Building))
+                                    {
+                                        right = middle;
+                                    }
+                                    else
+                                    {
+                                        left = middle + 1;
+                                    }
+                                } while (left < right);
+                            }
+                            pos1 = pos;
+                            time = Utils.TickCount;
+                            break;
+                        }
+                    }
+
+                    listPoint.Add(new Tuple<Vector2, float>(pos1.To2D(), time));
+                }
+                var target = gapcloser.Sender;
+                if (!OnWall)
+                {
+                    for (int i = 0; i < listPoint.Count - 1; i++)
+                    {
+                        if (listPoint[i].Item1.IsWall() && listPoint[i].Item1.Distance(ObjectManager.Player.Position) < Utilities.Slider("wall.distance.to.enemy")
+                             && listPoint[i].Item1.Distance(gapcloser.Sender.Position) > 400 && !listPoint[i].Item1.To3D().UnderTurret(true))
+                        {
+                            var i1 = i;
+                            var starttick = listPoint[i1].Item2;
+                            var startpos = target.ServerPosition.To2D();
+                            var speed = target.GetSpell(gapcloser.Slot).SData.MissileMaxSpeed;
+                            var pathshit = target.Path.OrderBy(x => starttick + (int)(1000 * (new Vector3(x.X, x.Y, x.Z).
+                            Distance(startpos.To3D()) / speed))).FirstOrDefault();
+
+                            var endpos = new Vector3(pathshit.X, pathshit.Y, pathshit.Z);
+                            var endtick = starttick + (int)(1000 * (endpos.Distance(startpos.To3D())
+                                / speed));
+                            var camilleendtic = starttick + (int)(1000 * (listPoint[i].Item1.Distance(ObjectManager.Player.Position)
+                                / Spells.E.Speed));
+
+                            if (listPoint[i].Item1.Distance(endpos) < 500 && camilleendtic > endtick)
+                            {
+                                Spells.E.Cast(listPoint[i].Item1);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void OnProcess(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -206,6 +353,7 @@ namespace hCamille.Champions
             }
             
         }
+
 
         private static void UseE()
         {
