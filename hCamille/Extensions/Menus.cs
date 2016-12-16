@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LeagueSharp;
 using LeagueSharp.Common;
 
 namespace hCamille.Extensions
@@ -62,6 +63,7 @@ namespace hCamille.Extensions
                 {
                     harassmenu.AddItem(new MenuItem("q.harass", "Use [Q] ").SetValue(true));
                     harassmenu.AddItem(new MenuItem("w.harass", "Use [W] ").SetValue(true));
+                    harassmenu.AddItem(new MenuItem("harass.mana", "Mana Manager").SetValue(new Slider(50, 1, 99))).SetFontStyle(FontStyle.Bold, SharpDX.Color.Gold);
                     Config.AddSubMenu(harassmenu);
                 }
 
@@ -70,6 +72,7 @@ namespace hCamille.Extensions
                     clearmenu.AddItem(new MenuItem("q.clear", "Use [Q]").SetValue(true));
                     clearmenu.AddItem(new MenuItem("w.clear", "Use [W]").SetValue(true));
                     clearmenu.AddItem(new MenuItem("min.count", "[W] Min. Minion Count").SetValue(new Slider(3, 1, 5)));
+                    clearmenu.AddItem(new MenuItem("clear.mana", "Mana Manager").SetValue(new Slider(50, 1, 99))).SetFontStyle(FontStyle.Bold,SharpDX.Color.Gold);
                     Config.AddSubMenu(clearmenu);
                 }
 
@@ -77,9 +80,46 @@ namespace hCamille.Extensions
                 {
                     junglemenu.AddItem(new MenuItem("q.jungle", "Use [Q]").SetValue(true));
                     junglemenu.AddItem(new MenuItem("w.jungle", "Use [W]").SetValue(true));
+                    junglemenu.AddItem(new MenuItem("jungle.mana", "Mana Manager").SetValue(new Slider(50, 1, 99))).SetFontStyle(FontStyle.Bold, SharpDX.Color.Gold);
                     Config.AddSubMenu(junglemenu);
                 }
+                var drawMenu = new Menu("Draw Settings", "Draw Settings");
+                {
+                    var skillDraw = new Menu("Skill Draws", "Skill Draws");
+                    {
+                        skillDraw.AddItem(new MenuItem("q.draw", "Draw E Range").SetValue(new Circle(false, Color.White)));
+                        skillDraw.AddItem(new MenuItem("w.draw", "Draw W Range").SetValue(new Circle(false, Color.White)));
+                        skillDraw.AddItem(new MenuItem("e.draw", "Draw E Range").SetValue(new Circle(false, Color.White)));
+                        skillDraw.AddItem(new MenuItem("r.draw", "Draw R Range").SetValue(new Circle(false, Color.White)));
+                        drawMenu.AddSubMenu(skillDraw);
+                    }
 
+                    Config.AddSubMenu(drawMenu);
+
+                }
+                var drawDamageMenu = new MenuItem("RushDrawEDamage", "Combo Damage").SetValue(true);
+                var drawFill = new MenuItem("RushDrawEDamageFill", "Combo Damage Fill").SetValue(new Circle(true, Color.Gold));
+
+                drawMenu.SubMenu("Damage Draws").AddItem(drawDamageMenu);
+                drawMenu.SubMenu("Damage Draws").AddItem(drawFill);
+
+                DamageIndicator.DamageToUnit = TotalDamage;
+                DamageIndicator.Enabled = drawDamageMenu.GetValue<bool>();
+                DamageIndicator.Fill = drawFill.GetValue<Circle>().Active;
+                DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
+
+                drawDamageMenu.ValueChanged +=
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
+                {
+                    DamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+                };
+
+                drawFill.ValueChanged +=
+                delegate (object sender, OnValueChangeEventArgs eventArgs)
+                {
+                    DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
+                    DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
+                };
                 Config.AddItem(
                     new MenuItem("keys", "                                      Keys").SetFontStyle(
                         FontStyle.Bold, SharpDX.Color.DodgerBlue));
@@ -91,6 +131,35 @@ namespace hCamille.Extensions
                         FontStyle.Bold, SharpDX.Color.Gold));
                 Config.AddToMainMenu();
             }
+        }
+
+        private static float TotalDamage(Obj_AI_Hero hero)
+        {
+            var damage = 0d;
+            if (Spells.Q.IsReady())
+            {
+                if (Calculation.HasProtocolOneBuff)
+                {
+                    damage += hero.ProtocolDamage();
+                }
+                if (Calculation.HasProtocolTwoBuff)
+                {
+                    damage += hero.ProtocolTwoDamage();
+                }
+            }
+            if (Spells.W.IsReady())
+            {
+                damage += hero.TacticalDamage();
+            }
+            if (Spells.E.IsReady())
+            {
+                damage += hero.WallDiveDamage();
+            }
+            if (Spells.R.IsReady())
+            {
+                damage += hero.HextechDamage()*4;
+            }
+            return (float)damage;
         }
     }
 }

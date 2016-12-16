@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Champions\Camille.cs" />
+    <Compile Include="Extensions\Calculation.cs" />
+    <Compile Include="Extensions\DamageIndicator.cs" />
     <Compile Include="Extensions\Menus.cs" />
     <Compile Include="Extensions\Spells.cs" />
     <Compile Include="Extensions\Utilities.cs" />

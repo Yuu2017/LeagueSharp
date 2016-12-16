@@ -16,6 +16,17 @@ namespace hCamille.Champions
         public static string WallBuff => "camilleedashtoggle";
         public static string DashName => "camilleedash";
         public static bool OnWall => ObjectManager.Player.HasBuff(WallBuff) || Spells.E.Instance.Name == "CamilleEDash2";
+        public static bool HasQBuff => ObjectManager.Player.HasBuff("CamilleQ");
+        public static string UltimateEmitterName => "Indicator_Edge.troy";
+        /*
+         * TODO
+         * Camille_Base_R_cas_sound.troy
+         * Camille_Base_R_buf.troy
+         * Camille_Base_R_tar.troy
+         * Camille_Base_R_tar_tether.troy
+         * Camille_Base_R_Indicator_Edge.troy
+         * Camille_Base_R_cas.troy      
+         */
 
         public Camille()
         {
@@ -25,7 +36,52 @@ namespace hCamille.Champions
             Game.OnUpdate += CamilleOnUpdate;
             Obj_AI_Base.OnDoCast += CamilleOnDoCast;
             Obj_AI_Base.OnIssueOrder += OnIssueOrder;
+            Drawing.OnDraw += OnDraw;
+            Obj_AI_Base.OnProcessSpellCast += OnProcess;
+        }
 
+        private void OnProcess(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+               
+                if (args.SData.Name == "CamilleW")
+                {
+                    Spells.W.LastCastAttemptT = Environment.TickCount;
+                }
+
+                if (args.SData.Name == "CamilleE" || args.SData.Name == "CamilleEDash2")
+                {
+                    Spells.E.LastCastAttemptT = Environment.TickCount;
+                }
+
+                if (args.SData.Name == "CamilleR")
+                {
+                    Spells.R.LastCastAttemptT = Environment.TickCount;
+                }
+
+
+            }
+        }
+
+        private void OnDraw(EventArgs args)
+        {
+            if (Menus.Config.Item("q.draw").GetValue<Circle>().Active && Spells.Q.IsReady())
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, Spells.Q.Range, Menus.Config.Item("q.draw").GetValue<Circle>().Color);
+            }
+            if (Menus.Config.Item("w.draw").GetValue<Circle>().Active && Spells.W.IsReady())
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, Spells.W.Range, Menus.Config.Item("w.draw").GetValue<Circle>().Color);
+            }
+            if (Menus.Config.Item("e.draw").GetValue<Circle>().Active && Spells.E.IsReady())
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, Spells.E.Range, Menus.Config.Item("e.draw").GetValue<Circle>().Color);
+            }
+            if (Menus.Config.Item("r.draw").GetValue<Circle>().Active && Spells.R.IsReady())
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, Spells.R.Range, Menus.Config.Item("r.draw").GetValue<Circle>().Color);
+            }
         }
 
         private void OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
@@ -78,7 +134,6 @@ namespace hCamille.Champions
                 {
                     FleeE();
                 }
-               
             }
         }
 
@@ -93,7 +148,8 @@ namespace hCamille.Champions
                     Spells.Q.Cast();
                 }
 
-                if (Spells.W.IsReady() && Utilities.Enabled("w.combo") && target.IsValidTarget(Spells.W.Range))
+                if (Spells.W.IsReady() && Utilities.Enabled("w.combo") && target.IsValidTarget(Spells.W.Range) && 
+                    Environment.TickCount - Spells.E.LastCastAttemptT > 1200)
                 {
                     switch (Menus.Config.Item("w.mode").GetValue<StringList>().SelectedIndex)
                     {
@@ -120,7 +176,8 @@ namespace hCamille.Champions
 
                 if (Spells.E.IsReady() && Utilities.Enabled("e.combo") && target.IsValidTarget(Utilities.Slider("enemy.search.range")))
                 {
-                    if (ObjectManager.Player.CountEnemiesInRange(Utilities.Slider("enemy.search.range")) <= Utilities.Slider("max.enemy.count"))
+                    if (ObjectManager.Player.CountEnemiesInRange(Utilities.Slider("enemy.search.range")) <= Utilities.Slider("max.enemy.count")
+                        && Environment.TickCount - Spells.R.LastCastAttemptT > 4000)
                     {
                         UseE();
                     }
@@ -290,6 +347,11 @@ namespace hCamille.Champions
 
         private static void OnMixed()
         {
+            if (ObjectManager.Player.ManaPercent < Utilities.Slider("harass.mana"))
+            {
+                return;
+            }
+
             var target = TargetSelector.GetTarget(1000, TargetSelector.DamageType.Physical);
             if (target != null)
             {
@@ -311,13 +373,18 @@ namespace hCamille.Champions
 
         private static void OnJungle()
         {
+            if (ObjectManager.Player.ManaPercent < Utilities.Slider("jungle.mana"))
+            {
+                return;
+            }
+
             var mob = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 100, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
             if (mob == null || mob.Count == 0)
             {
                 return;
             }
 
-            if (Spells.Q.IsReady() && Utilities.Enabled("q.jungle"))
+            if (Spells.Q.IsReady() && Utilities.Enabled("q.jungle") && Spells.Q.IsInRange(mob[0]))
             {
                 Spells.Q.Cast();
             }
@@ -331,7 +398,42 @@ namespace hCamille.Champions
 
         private static void OnClear()
         {
+            if (ObjectManager.Player.ManaPercent < Utilities.Slider("clear.mana"))
+            {
+                return;
+            }
+
             if (Spells.Q.IsReady() && Utilities.Enabled("q.clear"))
+            {
+                var minions = MinionManager.GetMinions(ObjectManager.Player.Position, 500, MinionTypes.All,
+                MinionTeam.Enemy).Count;
+                if (minions > 4)
+                {
+                    Spells.Q.Cast();
+                }
+            }
+
+            if (Spells.Q.IsReady() && Calculation.HasProtocolOneBuff && Utilities.Enabled("q.clear"))
+            {
+                var minion = MinionManager.GetMinions(ObjectManager.Player.Position, 500, MinionTypes.All,
+                    MinionTeam.Enemy).FirstOrDefault();
+                if (minion != null && minion.Health < minion.ProtocolDamage())
+                {
+                    Spells.Q.Cast();
+                }
+            }
+
+            if (Spells.Q.IsReady() && Calculation.HasProtocolTwoBuff && Utilities.Enabled("q.clear"))
+            {
+                var minion = MinionManager.GetMinions(ObjectManager.Player.Position, 500, MinionTypes.All,
+                    MinionTeam.Enemy).FirstOrDefault();
+                if (minion != null && minion.Health < minion.ProtocolTwoDamage())
+                {
+                    Spells.Q.Cast();
+                }
+            }
+
+            if (Spells.W.IsReady() && Utilities.Enabled("w.clear"))
             {
                 var minions = MinionManager.GetMinions(ObjectManager.Player.Position, Spells.W.Range, MinionTypes.All,
                 MinionTeam.NotAlly);
