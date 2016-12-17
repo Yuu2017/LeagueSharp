@@ -83,6 +83,14 @@ namespace hCamille.Extensions
                     junglemenu.AddItem(new MenuItem("jungle.mana", "Mana Manager").SetValue(new Slider(50, 1, 99))).SetFontStyle(FontStyle.Bold, SharpDX.Color.Gold);
                     Config.AddSubMenu(junglemenu);
                 }
+
+                var miscmenu = new Menu("Miscellaneous", "Miscellaneous");
+                {
+                    miscmenu.AddItem(new MenuItem("e.anti", "[E] -> Antigapcloser ?").SetValue(true));
+                    miscmenu.AddItem(new MenuItem("e.interrupt", "[E] -> Interrupter ?").SetValue(true));
+                    Config.AddSubMenu(miscmenu);
+                }
+
                 var drawMenu = new Menu("Draw Settings", "Draw Settings");
                 {
                     var skillDraw = new Menu("Skill Draws", "Skill Draws");

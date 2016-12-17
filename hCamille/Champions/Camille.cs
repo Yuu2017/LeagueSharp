@@ -45,7 +45,7 @@ namespace hCamille.Champions
 
         private void OnInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (sender.IsEnemy && args.DangerLevel > Interrupter2.DangerLevel.Medium)
+            if (sender.IsEnemy && args.DangerLevel > Interrupter2.DangerLevel.Medium && Utilities.Enabled("e.interrupt"))
             {
                 var result = ObjectManager.Player;
                 var rng = Utilities.Slider("wall.search.range");
@@ -109,7 +109,8 @@ namespace hCamille.Champions
 
         private void OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (gapcloser.Sender != null && gapcloser.Sender.IsEnemy && gapcloser.End.Distance(ObjectManager.Player.Position) < 300)
+            if (gapcloser.Sender != null && gapcloser.Sender.IsEnemy && gapcloser.End.Distance(ObjectManager.Player.Position) < 300
+                && Utilities.Enabled("e.anti"))
             {
                 var result = ObjectManager.Player;
                 var rng = Utilities.Slider("wall.search.range");
@@ -353,7 +354,6 @@ namespace hCamille.Champions
             }
             
         }
-
 
         private static void UseE()
         {
